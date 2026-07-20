@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI-Powered EA Roadmap</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #FAFAF9; color: #1E293B; -webkit-font-smoothing: antialiased; }
+  button { font-family: inherit; }
+  ::-webkit-scrollbar { height: 4px; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.5/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+const PHASES = [
+  {
+    id: 1, title: "AI Foundations", days: "Days 1-30", color: "#3B82F6",
+    description: "Learn to think with AI, not just use AI.",
+    sprints: [
+      {
+        id: 1, title: "Learn to Think with AI", days: "Days 1-15",
+        tools: ["Claude", "Anthropic Learn"],
+        problem: "You know AI exists but don't have a systematic way to think with it.",
+        tasks: [
+          { day: 1, focus: "What is Claude? How do LLMs work? Explore the interface.", artifact: 'Cheat sheet: "What AI Can and Can\'t Do"' },
+          { day: 2, focus: "Prompt structure: role + context + task", artifact: "3 prompts using role-context-task format" },
+          { day: 3, focus: "Output formatting: bullets, tables, step-by-step", artifact: 'Prompt: "Format a weekly executive update"' },
+          { day: 4, focus: "Few-shot prompting: teaching by example", artifact: 'Prompt: "Draft a professional email" with tone examples' },
+          { day: 5, focus: "Iterative prompting: improving through conversation", artifact: "Prompt chain: rough draft, refined, final" },
+          { day: 6, focus: "Summarization: turning long content into key points", artifact: 'Prompt: "Summarize meeting notes into action items"' },
+          { day: 7, focus: "Review day. Organize everything so far.", artifact: "Prompt library v1 (organized by category)" },
+          { day: 8, focus: "Negative prompting: constraints and boundaries", artifact: '5 improved prompts with "do not" rules' },
+          { day: 9, focus: "System prompts: setting Claude's persona and behavior", artifact: 'System prompt: "EA Writing Assistant"' },
+          { day: 10, focus: "Prompt chaining: multi-step sequences", artifact: "Chain: research, outline, draft, polish" },
+          { day: 11, focus: "Structured outputs: tables, JSON, specific formats", artifact: 'Prompt: "Create a structured meeting agenda"' },
+          { day: 12, focus: "Claude Projects: creating persistent AI workspaces", artifact: 'Claude Project: "Email Drafting Assistant"' },
+          { day: 13, focus: "Adding knowledge to Projects (uploading context docs)", artifact: "Claude Project with uploaded style guide or SOPs" },
+          { day: 14, focus: "Template prompts inside Projects", artifact: "5 reusable template prompts in your Projects" },
+          { day: 15, focus: "Sprint review. Polish and document everything.", artifact: "Sprint 1 summary + public learning post" },
+        ],
+        checklist: [
+          "Can explain how Claude works to a colleague",
+          "Can write prompts with clear role, context, task, and format",
+          "Can use few-shot prompting with examples",
+          "Can iterate on output to improve quality",
+          "Have a prompt library with 15+ organized prompts",
+          "Have 2+ Claude Projects set up and tested",
+          "Have posted 7+ public learning updates",
+        ],
+      },
+      {
+        id: 2, title: "Build Your Personal AI System", days: "Days 16-30",
+        tools: ["Claude", "Notion (free)", "Google Docs/Sheets"],
+        problem: 'Your notes, prompts, and ideas are scattered. You need a "second brain."',
+        tasks: [
+          { day: 16, focus: "Design your personal AI system. What do you need?", artifact: "System architecture document" },
+          { day: 17, focus: "Set up your Prompt Library (organized by category)", artifact: "Prompt Library with categories and 20+ entries" },
+          { day: 18, focus: "Set up your Build Log (daily record of what you create)", artifact: "Build Log template + first 15 entries" },
+          { day: 19, focus: "Set up your Knowledge Vault (notes, insights, resources)", artifact: "Knowledge Vault structure with 3+ sections" },
+          { day: 20, focus: "Set up your SOP Library", artifact: 'SOP Library template + first SOP: "How I Write Prompts"' },
+          { day: 21, focus: "Set up your Learning Database", artifact: "Learning tracker with everything consumed so far" },
+          { day: 22, focus: "Review day. Connect the pieces.", artifact: "Refined personal AI system" },
+          { day: 23, focus: "Create your AI Journal", artifact: "AI Journal template + 5 entries" },
+          { day: 24, focus: "Build a Bookmark System", artifact: "Organized bookmark system with 30+ entries" },
+          { day: 25, focus: 'Create SOP: "How I Prepare for Meetings with AI"', artifact: "Complete SOP with steps and prompt examples" },
+          { day: 26, focus: 'Create SOP: "How I Draft Emails with AI"', artifact: "Complete SOP with steps and prompt examples" },
+          { day: 27, focus: 'Create SOP: "How I Research a Topic with AI"', artifact: "Complete SOP with steps and prompt examples" },
+          { day: 28, focus: 'Create a reusable template: "Weekly Review"', artifact: "Weekly review template" },
+          { day: 29, focus: "Stress-test your system. Can you find things quickly?", artifact: "Improvements log + system refinements" },
+          { day: 30, focus: "Phase 1 complete. Sprint review. Milestone check.", artifact: "Milestone review + public learning post" },
+        ],
+        checklist: [
+          "Have a working personal AI system with 5+ components",
+          "Prompt Library has 25+ entries organized by category",
+          "Build Log is up to date with 25+ entries",
+          "Have 5+ SOPs documented",
+          "Knowledge Vault has organized notes",
+          "System is something you actually use daily",
+          "Have posted 15+ public learning updates total",
+        ],
+      },
+    ],
+  },
+  {
+    id: 2, title: "AI-Powered EA", days: "Days 31-60", color: "#8B5CF6",
+    description: "Use AI to be dramatically better at the actual work you do every day.",
+    sprints: [
+      {
+        id: 3, title: "Master Executive Communication", days: "Days 31-45",
+        tools: ["Claude", "Gmail", "Google Docs", "Google Drive"],
+        problem: "Executive communication eats your day. You need a system to draft faster and write better.",
+        tasks: [
+          { day: 31, focus: "Audit your current email workflow. Where are the bottlenecks?", artifact: "Current state assessment document" },
+          { day: 32, focus: "Gmail power features: labels, filters, templates", artifact: 'SOP: "My Gmail Management System"' },
+          { day: 33, focus: "Build an email triage system: categorize, prioritize, route", artifact: "Email triage framework template" },
+          { day: 34, focus: "AI email drafting: create prompts for 5 common email types", artifact: "5 email prompts (follow-up, intro, bad news, request, update)" },
+          { day: 35, focus: "Matching your executive's voice: style guides and examples", artifact: "Executive voice style guide + system prompt" },
+          { day: 36, focus: 'Claude Project: "Executive Email Assistant"', artifact: "Claude Project fully configured" },
+          { day: 37, focus: "Review day. Test your email system with real scenarios.", artifact: "Refined email system + documentation" },
+          { day: 38, focus: "Google Docs: templates for memos, briefs, and reports", artifact: "3 document templates in Google Docs" },
+          { day: 39, focus: "AI-assisted writing: research, draft, edit workflow", artifact: 'Workflow: "How I Create Executive Documents"' },
+          { day: 40, focus: "Proofreading and editing with AI", artifact: "Editing prompt + quality checklist template" },
+          { day: 41, focus: "Follow-up tracking: never let anything slip", artifact: "Follow-up tracker (Sheets or Notion)" },
+          { day: 42, focus: "Meeting follow-up workflow: notes, actions, emails", artifact: "End-to-end meeting follow-up SOP" },
+          { day: 43, focus: "Communication templates: recurring messages you send weekly", artifact: "10 reusable communication templates" },
+          { day: 44, focus: "Building a stakeholder communication tracker", artifact: "Stakeholder tracker template" },
+          { day: 45, focus: "Sprint review. Document everything.", artifact: "Sprint 3 summary + public learning post" },
+        ],
+        checklist: [
+          "Gmail has a working filter and label system",
+          "Have 10+ email templates ready",
+          "Claude Project for email matches your executive's voice",
+          "Follow-up tracker is populated and checked daily",
+          "Have a working document creation workflow",
+          "Can draft an executive-quality email in under 5 minutes",
+          "Have 5+ new SOPs added to your library",
+        ],
+      },
+      {
+        id: 4, title: "Own Meetings, Research & Knowledge", days: "Days 46-60",
+        tools: ["Claude", "Google Calendar", "Google Sheets", "Google Docs"],
+        problem: "Meetings are where decisions happen. Own the lifecycle and you become irreplaceable.",
+        tasks: [
+          { day: 46, focus: "Map the meeting lifecycle: before, during, after", artifact: "Meeting lifecycle framework document" },
+          { day: 47, focus: "Meeting prep: researching attendees and topics with AI", artifact: 'SOP: "How to Prepare Meeting Briefs with AI"' },
+          { day: 48, focus: 'Claude Project: "Meeting Prep Assistant"', artifact: "Claude Project with context and templates" },
+          { day: 49, focus: "Agenda creation: templates and AI-assisted drafting", artifact: "3 agenda templates (internal, client, board-level)" },
+          { day: 50, focus: "Meeting notes, action items, assignments workflow", artifact: "Meeting follow-up workflow (end to end)" },
+          { day: 51, focus: "Google Calendar power features", artifact: 'SOP: "Calendar Management System"' },
+          { day: 52, focus: "Review day. Run your meeting system on a real meeting.", artifact: "Test results + refinements" },
+          { day: 53, focus: "Research with AI: from question to executive briefing", artifact: "Research workflow template" },
+          { day: 54, focus: "Document analysis: extracting key info from long reports", artifact: 'Prompt: "Analyze and summarize this document"' },
+          { day: 55, focus: "Comparing documents: finding changes and differences", artifact: 'Prompt: "Compare versions and highlight changes"' },
+          { day: 56, focus: "Google Sheets: building trackers", artifact: "Project tracker template in Google Sheets" },
+          { day: 57, focus: "Google Sheets: conditional formatting and data validation", artifact: "Enhanced tracker with visual indicators" },
+          { day: 58, focus: "Weekly executive briefing: building the full workflow", artifact: "Weekly Briefing Generator (prompts + template)" },
+          { day: 59, focus: "Knowledge management: organizing for retrieval", artifact: "Updated Knowledge Vault" },
+          { day: 60, focus: "Phase 2 complete. Sprint review. Milestone check.", artifact: "Milestone review + public learning post" },
+        ],
+        checklist: [
+          "Have a complete meeting lifecycle system",
+          "Claude Project for meeting prep is tested and reliable",
+          "Can create a research briefing in 15 minutes",
+          "Google Calendar is organized with a consistent system",
+          "Have a working project tracker in Google Sheets",
+          "Weekly Briefing Generator produces polished output",
+          "Have posted 30+ public learning updates total",
+        ],
+      },
+    ],
+  },
+  {
+    id: 3, title: "Business Operations", days: "Days 61-90", color: "#EC4899",
+    description: "Move from supporting tasks to managing systems.",
+    sprints: [
+      {
+        id: 5, title: "Solve Real EA Challenges", days: "Days 61-75",
+        tools: ["Claude", "Google Workspace", "Your personal AI system"],
+        problem: "Most AI tutorials never address the real, high-stakes challenges EAs face daily.",
+        tasks: [
+          { day: 61, focus: "Challenge: How do I prepare a CEO for an important meeting?", artifact: 'SOP + prompts: "CEO Meeting Prep"' },
+          { day: 62, focus: "Build the full CEO prep workflow", artifact: "Complete CEO meeting prep system" },
+          { day: 63, focus: "Challenge: How do I plan executive travel?", artifact: 'SOP: "Executive Travel Planning Checklist"' },
+          { day: 64, focus: "Create a travel planning template", artifact: "Travel template + packing list generator" },
+          { day: 65, focus: "Challenge: How do I manage confidential documents?", artifact: 'SOP: "Confidential Document Protocol"' },
+          { day: 66, focus: "Challenge: How do I prepare a board report?", artifact: "Board report template + preparation SOP" },
+          { day: 67, focus: "Review day. Test all systems with realistic scenarios.", artifact: "Refined systems + documentation" },
+          { day: 68, focus: "Challenge: How do I organize an offsite or team event?", artifact: "Event planning template + timeline checklist" },
+          { day: 69, focus: "Build the full event planning workflow", artifact: "Complete event planning system" },
+          { day: 70, focus: "Challenge: How do I track executive priorities?", artifact: "Executive priority tracker (Google Sheets)" },
+          { day: 71, focus: "Challenge: How do I manage multiple stakeholders?", artifact: "Stakeholder map template + communication tracker" },
+          { day: 72, focus: "Challenge: Weekly executive briefing (enhanced)", artifact: "Enhanced weekly briefing system" },
+          { day: 73, focus: "Challenge: How do I onboard myself to a new executive?", artifact: '"First 30 Days" onboarding template for EAs' },
+          { day: 74, focus: 'Compile all challenges into a "Real EA Playbook"', artifact: "EA Playbook v1 (all challenges organized)" },
+          { day: 75, focus: "Sprint review. Document everything.", artifact: "Sprint 5 summary + public learning post" },
+        ],
+        checklist: [
+          "Have 8+ SOPs covering real EA challenges",
+          "Each challenge has a working system",
+          "Executive priority tracker is functional and clear",
+          "Board report template is professional and complete",
+          "Travel planning system handles complexity",
+          "Could walk into a new EA role and handle these on Day 1",
+        ],
+      },
+      {
+        id: 6, title: "Build a Client Operations System", days: "Days 76-90",
+        tools: ["GoHighLevel (free trial)", "Claude", "Google Sheets"],
+        problem: "Executives need systems for managing clients, leads, and business relationships.",
+        tasks: [
+          { day: 76, focus: "CRM concepts: what they are, why they matter", artifact: 'Cheat sheet: "CRM for Executive Assistants"' },
+          { day: 77, focus: "Start GHL free trial. Explore the dashboard.", artifact: 'Documentation: "GHL Platform Overview"' },
+          { day: 78, focus: "Contacts: adding, tagging, custom fields", artifact: "Contact management SOP + tag system template" },
+          { day: 79, focus: "Pipelines: designing stages for a business process", artifact: 'Pipeline template: "Client Onboarding"' },
+          { day: 80, focus: "Building your first pipeline with sample data", artifact: "Working pipeline with 10+ sample contacts" },
+          { day: 81, focus: "Forms: creating intake and data collection forms", artifact: 'Form: "Client Intake Form"' },
+          { day: 82, focus: "Review day. Test pipeline with realistic scenarios.", artifact: "Refined pipeline + documentation" },
+          { day: 83, focus: "Calendar booking: appointment types, availability", artifact: 'Calendar: "Executive Meeting Scheduler"' },
+          { day: 84, focus: "GHL Workflows intro: triggers and actions", artifact: 'Cheat sheet: "GHL Workflow Building Blocks"' },
+          { day: 85, focus: "Workflow: form, CRM entry, notification", artifact: 'Automation: "New Lead Notification"' },
+          { day: 86, focus: "Workflow: appointment booking, confirmation email", artifact: 'Automation: "Appointment Confirmation"' },
+          { day: 87, focus: "Workflow: pipeline stage change, automated action", artifact: 'Automation: "Pipeline Stage Actions"' },
+          { day: 88, focus: "End-to-end: form, CRM, pipeline, booking, follow-up", artifact: "Complete client operations workflow" },
+          { day: 89, focus: "Document the entire GHL setup as a case study", artifact: "GHL case study with screenshots" },
+          { day: 90, focus: "Phase 3 complete. Sprint review. Milestone check.", artifact: "Milestone review + public learning post" },
+        ],
+        checklist: [
+          "Can explain CRM concepts to a non-technical person",
+          "Have a working pipeline with stages and contacts",
+          "Have created a form connected to your CRM",
+          "Have built 3+ automated workflows",
+          "Have an end-to-end client operations system",
+          "Understand automation logic (if X, then Y)",
+          "Have a case study for your portfolio",
+        ],
+      },
+    ],
+  },
+  {
+    id: 4, title: "Automation Builder", days: "Days 91-120", color: "#F59E0B",
+    description: "Make different tools work together without manual effort.",
+    sprints: [
+      {
+        id: 7, title: "Connect Your Tools", days: "Days 91-105",
+        tools: ["Zapier (free tier)", "Make (free tier)", "Claude"],
+        problem: "Your tools are isolated. Gmail doesn't talk to your CRM. Information lives in silos.",
+        tasks: [
+          { day: 91, focus: "Integration thinking: map data flows between your tools", artifact: "Data flow map of your current tools" },
+          { day: 92, focus: "Zapier intro: triggers, actions, your first Zap", artifact: "Zap: form, sheet notification" },
+          { day: 93, focus: "Zapier: multi-step Zaps", artifact: "Zap: email, CRM entry, task" },
+          { day: 94, focus: "Zapier: filters and paths (conditional logic)", artifact: "Zap with branching logic" },
+          { day: 95, focus: "Zapier: formatting data between apps", artifact: 'Cheat sheet: "Zapier Data Formatting"' },
+          { day: 96, focus: "Make intro: scenarios, modules, first scenario", artifact: "Scenario: form, sheet, email" },
+          { day: 97, focus: "Make: routers and filters (parallel paths)", artifact: "Scenario with routing logic" },
+          { day: 98, focus: "Review: Zapier vs Make comparison", artifact: 'Comparison doc: "Zapier vs Make"' },
+          { day: 99, focus: "Build: Automate Executive Communication", artifact: "Automation: email, categorize, route, notify" },
+          { day: 100, focus: "Build: Automate Meeting Prep", artifact: "Automation: calendar, research, brief" },
+          { day: 101, focus: "Build: Automate Follow-Up Tracking", artifact: "Automation: meeting, tasks, reminders" },
+          { day: 102, focus: "Build: Automate Client Intake", artifact: "Automation: form, CRM, email, booking" },
+          { day: 103, focus: "Error handling: when automations break", artifact: 'SOP: "Automation Troubleshooting"' },
+          { day: 104, focus: "Combining AI with automations", artifact: "AI-enhanced automation template" },
+          { day: 105, focus: "Sprint review. Document everything.", artifact: "Sprint 7 summary + public learning post" },
+        ],
+        checklist: [
+          "Can build multi-step automations in Zapier and Make",
+          "Understand triggers, actions, filters, conditional logic",
+          "Have 5+ working automations",
+          "Know when to use Zapier vs Make",
+          "Can troubleshoot failed automations",
+          "Have documented business impact of each automation",
+        ],
+      },
+      {
+        id: 8, title: "Build Advanced Automations", days: "Days 106-120",
+        tools: ["n8n (free)", "Postman (free)", "Make", "Claude"],
+        problem: "Basic automations connect two tools. Advanced ones handle APIs, data transformation, and AI.",
+        tasks: [
+          { day: 106, focus: "APIs explained: what they are, why they matter", artifact: 'Cheat sheet: "APIs for Non-Developers"' },
+          { day: 107, focus: "API basics: requests, responses, status codes", artifact: 'Documentation: "API Vocabulary Guide"' },
+          { day: 108, focus: "Making API calls with Postman", artifact: "3+ successful API calls documented" },
+          { day: 109, focus: "Authentication: API keys, OAuth basics", artifact: 'Notes: "API Authentication Methods"' },
+          { day: 110, focus: "Working with JSON: reading structured data", artifact: 'Cheat sheet: "Reading JSON Data"' },
+          { day: 111, focus: "Webhooks: receiving data in real-time", artifact: "Webhook test: receive and process data" },
+          { day: 112, focus: "Review day. Practice more API calls.", artifact: "API practice log with 5+ calls" },
+          { day: 113, focus: "n8n intro: interface, nodes, first workflow", artifact: "n8n workflow: webhook, process, email" },
+          { day: 114, focus: "n8n: HTTP Request node (calling APIs)", artifact: "n8n workflow with external API call" },
+          { day: 115, focus: "n8n: conditional logic and branching", artifact: "n8n workflow with IF/switch nodes" },
+          { day: 116, focus: "n8n: data transformation (merge, split, reshape)", artifact: "n8n workflow with data processing" },
+          { day: 117, focus: "n8n: error handling and retry logic", artifact: "n8n workflow with error handling" },
+          { day: 118, focus: "Advanced Make: API calls within scenarios", artifact: "Make scenario with HTTP module" },
+          { day: 119, focus: "Build: complex automation for a real business problem", artifact: "End-to-end automation with API + logic + AI" },
+          { day: 120, focus: "Phase 4 complete. Sprint review. Milestone check.", artifact: "Milestone review + public learning post" },
+        ],
+        checklist: [
+          "Can explain what an API is to a non-technical colleague",
+          "Can make API calls and read JSON responses",
+          "Have built 3+ n8n workflows",
+          "Understand webhooks and when to use them",
+          "Can troubleshoot API errors",
+          "Know when to choose Zapier vs Make vs n8n",
+        ],
+      },
+    ],
+  },
+  {
+    id: 5, title: "AI Systems", days: "Days 121-150", color: "#10B981",
+    description: "Build intelligent systems that think, not just automate.",
+    sprints: [
+      {
+        id: 9, title: "Build AI Agents & Intelligent Workflows", days: "Days 121-135",
+        tools: ["Claude", "n8n or Make", "Your automation stack"],
+        problem: "Automations run on rules. AI agents run on judgment. That's the future of EA work.",
+        tasks: [
+          { day: 121, focus: "What are AI agents? How do they differ from automations?", artifact: 'Cheat sheet: "Automations vs AI Agents"' },
+          { day: 122, focus: "Agent design patterns: when to use agents vs rules", artifact: 'Decision framework: "Agent or Automation?"' },
+          { day: 123, focus: "Simple agent concept: Claude with structured instructions", artifact: 'Agent design doc: "Research Agent"' },
+          { day: 124, focus: "Agent workflows: plan, execute, review", artifact: 'Workflow template: "Agent Task Loop"' },
+          { day: 125, focus: "Human-in-the-loop: when agents should pause and ask", artifact: 'SOP: "Designing Human Approval Points"' },
+          { day: 126, focus: "Agent guardrails: preventing mistakes", artifact: 'Checklist: "AI Agent Quality Controls"' },
+          { day: 127, focus: "Review day. Test agent concepts with real scenarios.", artifact: "Tested agent designs + refinements" },
+          { day: 128, focus: "Build: Email Triage Agent", artifact: "Agent: read, categorize, draft, flag" },
+          { day: 129, focus: "Build: Meeting Prep Agent", artifact: "Agent: detect meeting, research, brief" },
+          { day: 130, focus: "Build: Research and Briefing Agent", artifact: "Agent: topic, gather, synthesize, format" },
+          { day: 131, focus: "Build: Priority Monitoring Agent", artifact: "Agent: scan sources, filter, alert" },
+          { day: 132, focus: "Agent testing: running scenarios and checking quality", artifact: "Test results + quality metrics" },
+          { day: 133, focus: "Combining agents with existing automations", artifact: "Integration plan" },
+          { day: 134, focus: "Document agent design decisions and lessons learned", artifact: "Agent design case study" },
+          { day: 135, focus: "Sprint review. Document everything.", artifact: "Sprint 9 summary + public learning post" },
+        ],
+        checklist: [
+          "Can explain AI agents vs automations",
+          "Have designed and built 3+ agent workflows",
+          "Understand human-in-the-loop patterns",
+          "Have implemented guardrails and quality checks",
+          "Can connect agents to automation platforms",
+          "Have documented agent design decisions",
+        ],
+      },
+      {
+        id: 10, title: "Executive Dashboards & Knowledge Systems", days: "Days 136-150",
+        tools: ["Google Sheets", "Notion (free)", "Claude", "Your automation stack"],
+        problem: "Executives need visibility (dashboards) and access (knowledge systems). Build both.",
+        tasks: [
+          { day: 136, focus: "Dashboard design principles: what makes one useful", artifact: 'Cheat sheet: "Dashboard Design Rules"' },
+          { day: 137, focus: "Executive dashboard requirements", artifact: 'Template: "Executive Dashboard Requirements"' },
+          { day: 138, focus: "Build: Project Status Dashboard (Google Sheets)", artifact: "Working dashboard with charts" },
+          { day: 139, focus: "Enhance with conditional formatting and visuals", artifact: "Enhanced dashboard" },
+          { day: 140, focus: "Connect automated data feeds to dashboard", artifact: "Dashboard with live data" },
+          { day: 141, focus: "Notion intro: pages, databases, views", artifact: "Notion workspace setup" },
+          { day: 142, focus: "Review day. Refine dashboards, explore Notion.", artifact: "Improved dashboards" },
+          { day: 143, focus: "Build: Knowledge Base in Notion", artifact: "Knowledge Base v1 with 3 sections" },
+          { day: 144, focus: "Build: SOP Library in Notion (migrate earlier work)", artifact: "Centralized SOP Library" },
+          { day: 145, focus: "Build: Template Library (all templates organized)", artifact: "Template Library with 25+ entries" },
+          { day: 146, focus: "Build: EA Operations Hub (central starting point)", artifact: "Operations Hub linking all systems" },
+          { day: 147, focus: "Connect knowledge base with AI", artifact: "AI-enhanced knowledge retrieval workflow" },
+          { day: 148, focus: "Build: Team Wiki or Onboarding Guide", artifact: 'Wiki: "New EA Onboarding Guide"' },
+          { day: 149, focus: "Automate dashboard and knowledge base updates", artifact: "Automated refresh workflows" },
+          { day: 150, focus: "Phase 5 complete. Sprint review. Milestone check.", artifact: "Milestone review + public learning post" },
+        ],
+        checklist: [
+          "Have 2+ working dashboards with real data",
+          "Knowledge management system is organized and searchable",
+          "SOP and Template libraries are centralized",
+          "EA Operations Hub connects everything",
+          "At least one dashboard has automated data feeds",
+          "Could hand the system to another EA",
+        ],
+      },
+    ],
+  },
+  {
+    id: 6, title: "Professional Portfolio", days: "Days 151-180", color: "#EF4444",
+    description: "Turn 150 days of building into career opportunities.",
+    sprints: [
+      {
+        id: 11, title: "Capstone Projects", days: "Days 151-165",
+        tools: ["Everything you've learned"],
+        problem: "You have dozens of small projects. Now build 2-3 big ones that prove end-to-end ability.",
+        tasks: [
+          { day: 151, focus: "Capstone planning: choose 2-3 projects, define scope", artifact: "Project scoping documents" },
+          { day: 152, focus: "Capstone 1: Design the system architecture", artifact: "System design + workflow diagram" },
+          { day: 153, focus: "Capstone 1: Build core functionality", artifact: "Working prototype" },
+          { day: 154, focus: "Capstone 1: Add secondary features and polish", artifact: "Enhanced system" },
+          { day: 155, focus: "Capstone 1: Test with realistic scenarios", artifact: "Tested and refined system" },
+          { day: 156, focus: "Capstone 1: Write the case study", artifact: "Case study (problem, solution, results)" },
+          { day: 157, focus: "Capstone 2: Design the system architecture", artifact: "System design + workflow diagram" },
+          { day: 158, focus: "Capstone 2: Build core functionality", artifact: "Working prototype" },
+          { day: 159, focus: "Capstone 2: Add secondary features and polish", artifact: "Enhanced system" },
+          { day: 160, focus: "Capstone 2: Test with realistic scenarios", artifact: "Tested and refined system" },
+          { day: 161, focus: "Capstone 2: Write the case study", artifact: "Complete case study" },
+          { day: 162, focus: "Capstone 3 (optional) or improve existing project", artifact: "Third capstone or enhanced project" },
+          { day: 163, focus: "Capstone 3: complete and document", artifact: "Case study or enhanced documentation" },
+          { day: 164, focus: "Review all capstones. Get feedback.", artifact: "Feedback notes + revision plan" },
+          { day: 165, focus: "Final capstone polish based on feedback", artifact: "Finalized capstone projects" },
+        ],
+        checklist: [
+          "Have 2-3 portfolio-quality capstone projects",
+          "Each capstone has a complete case study",
+          "Projects demonstrate different skill sets",
+          "Have received feedback and incorporated it",
+          "Would feel confident presenting in an interview",
+        ],
+      },
+      {
+        id: 12, title: "Career Sprint", days: "Days 166-180",
+        tools: ["Claude", "LinkedIn", "Your portfolio platform"],
+        problem: "Skills without packaging are invisible. Turn your journey into opportunities.",
+        tasks: [
+          { day: 166, focus: "Portfolio: catalog all 150+ artifacts by category", artifact: "Master artifact inventory" },
+          { day: 167, focus: "Portfolio: decide format and platform", artifact: "Portfolio outline" },
+          { day: 168, focus: 'Portfolio: write "About Me" and professional story', artifact: "Professional bio and journey narrative" },
+          { day: 169, focus: "Portfolio: curate top 10 projects with descriptions", artifact: "Portfolio project showcase" },
+          { day: 170, focus: "Portfolio: add case studies and screenshots", artifact: "Visual portfolio with evidence" },
+          { day: 171, focus: "Portfolio: create your AI Skills Matrix", artifact: "Skills matrix with competencies and evidence" },
+          { day: 172, focus: "Resume: rewrite with AI-powered EA positioning", artifact: "Updated resume" },
+          { day: 173, focus: "LinkedIn: headline, summary, featured section", artifact: "Updated LinkedIn profile" },
+          { day: 174, focus: 'LinkedIn: write "What I Learned in 180 Days" post', artifact: "Long-form LinkedIn post" },
+          { day: 175, focus: "Interview prep: turn each capstone into a STAR story", artifact: "5 STAR interview stories" },
+          { day: 176, focus: "Interview prep: common AI-for-EA questions", artifact: "Interview prep document with 15+ Q&As" },
+          { day: 177, focus: "Create a shareable resource for other EAs", artifact: "Template pack, guide, or toolkit" },
+          { day: 178, focus: "Future planning: goals for the next 6 months", artifact: "Personal roadmap v2" },
+          { day: 179, focus: "Final portfolio review and polish", artifact: "Complete, polished portfolio" },
+          { day: 180, focus: "Celebrate. You did it. Post your story.", artifact: "Final reflection + celebration post" },
+        ],
+        checklist: [
+          "Portfolio is complete, polished, and shareable",
+          "Resume positions you as an AI-powered EA",
+          "LinkedIn is updated with featured projects",
+          "Have 5 STAR stories ready for interviews",
+          "Have created a shareable resource for other EAs",
+          "Have a clear plan for what's next",
+          "Feel confident calling yourself an AI-Powered EA",
+        ],
+      },
+    ],
+  },
+];
+
+const ARTIFACT_CATEGORIES = [
+  { key: "prompts", label: "Prompts", target: 50, icon: "\u{1F4AC}" },
+  { key: "sops", label: "SOPs", target: 20, icon: "\u{1F4CB}" },
+  { key: "workspaces", label: "AI Workspaces", target: 10, icon: "\u{1F9E0}" },
+  { key: "automations", label: "Automations", target: 20, icon: "\u26A1" },
+  { key: "dashboards", label: "Dashboards", target: 5, icon: "\u{1F4CA}" },
+  { key: "caseStudies", label: "Case Studies", target: 10, icon: "\u{1F4D6}" },
+  { key: "templates", label: "Templates", target: 30, icon: "\u{1F4C4}" },
+  { key: "portfolioProjects", label: "Portfolio Projects", target: 10, icon: "\u{1F3C6}" },
+];
+
+const STORAGE_KEY = "ai-ea-roadmap-progress";
+
+function App() {
+  const [completedTasks, setCompletedTasks] = useState({});
+  const [completedChecklist, setCompletedChecklist] = useState({});
+  const [artifactCounts, setArtifactCounts] = useState({});
+  const [expandedSprint, setExpandedSprint] = useState(null);
+  const [activePhase, setActivePhase] = useState(1);
+  const [view, setView] = useState("roadmap");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        setCompletedTasks(data.completedTasks || {});
+        setCompletedChecklist(data.completedChecklist || {});
+        setArtifactCounts(data.artifactCounts || {});
+      }
+    } catch (e) { console.log("No saved data"); }
+  }, []);
+
+  const save = useCallback((tasks, checklist, artifacts) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        completedTasks: tasks, completedChecklist: checklist, artifactCounts: artifacts,
+      }));
+    } catch (e) { console.error("Save failed:", e); }
+  }, []);
+
+  const toggleTask = (day) => {
+    const next = { ...completedTasks, [day]: !completedTasks[day] };
+    setCompletedTasks(next);
+    save(next, completedChecklist, artifactCounts);
+  };
+
+  const toggleChecklist = (sprintId, idx) => {
+    const key = sprintId + "-" + idx;
+    const next = { ...completedChecklist, [key]: !completedChecklist[key] };
+    setCompletedChecklist(next);
+    save(completedTasks, next, artifactCounts);
+  };
+
+  const updateArtifact = (key, delta) => {
+    const current = artifactCounts[key] || 0;
+    const next = { ...artifactCounts, [key]: Math.max(0, current + delta) };
+    setArtifactCounts(next);
+    save(completedTasks, completedChecklist, next);
+  };
+
+  const totalDays = 180;
+  const completedDays = Object.values(completedTasks).filter(Boolean).length;
+  const overallProgress = Math.round((completedDays / totalDays) * 100);
+
+  const getPhaseProgress = (phase) => {
+    let total = 0, done = 0;
+    phase.sprints.forEach(function(s) {
+      s.tasks.forEach(function(t) { total++; if (completedTasks[t.day]) done++; });
+    });
+    return total > 0 ? Math.round((done / total) * 100) : 0;
+  };
+
+  const getSprintProgress = (sprint) => {
+    let done = 0;
+    sprint.tasks.forEach(function(t) { if (completedTasks[t.day]) done++; });
+    return Math.round((done / sprint.tasks.length) * 100);
+  };
+
+  return (
+    React.createElement("div", { style: { fontFamily: "'Inter', -apple-system, system-ui, sans-serif", background: "#FAFAF9", minHeight: "100vh", color: "#1E293B" } },
+      // Header
+      React.createElement("div", { style: { background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "white", padding: "32px 24px 24px" } },
+        React.createElement("div", { style: { maxWidth: 800, margin: "0 auto" } },
+          React.createElement("div", { style: { fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#94A3B8", marginBottom: 8 } }, "180-DAY ROADMAP"),
+          React.createElement("h1", { style: { fontSize: 22, fontWeight: 700, margin: "0 0 4px", lineHeight: 1.3 } }, "The AI-Powered Executive Assistant"),
+          React.createElement("p", { style: { fontSize: 13, color: "#94A3B8", margin: 0 } }, "Build skills, systems, and a portfolio"),
+          // Progress
+          React.createElement("div", { style: { marginTop: 20 } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94A3B8", marginBottom: 6 } },
+              React.createElement("span", null, completedDays + " of " + totalDays + " days completed"),
+              React.createElement("span", null, overallProgress + "%")
+            ),
+            React.createElement("div", { style: { height: 6, background: "#334155", borderRadius: 3, overflow: "hidden" } },
+              React.createElement("div", { style: { height: "100%", width: overallProgress + "%", background: "linear-gradient(90deg, #3B82F6, #8B5CF6, #EC4899)", borderRadius: 3, transition: "width 0.3s" } })
+            )
+          ),
+          // Tabs
+          React.createElement("div", { style: { display: "flex", gap: 0, marginTop: 20, borderBottom: "1px solid #334155" } },
+            ["roadmap", "tracker"].map(function(tab) {
+              var label = tab === "roadmap" ? "Roadmap" : "Artifact Tracker";
+              return React.createElement("button", {
+                key: tab, onClick: function() { setView(tab); },
+                style: {
+                  background: "none", border: "none", color: view === tab ? "white" : "#64748B",
+                  fontSize: 13, fontWeight: 600, padding: "8px 16px", cursor: "pointer",
+                  borderBottom: view === tab ? "2px solid #3B82F6" : "2px solid transparent",
+                  marginBottom: -1,
+                }
+              }, label);
+            })
+          )
+        )
+      ),
+      // Content
+      React.createElement("div", { style: { maxWidth: 800, margin: "0 auto", padding: "0 16px 60px" } },
+        view === "tracker" ?
+          // Artifact Tracker
+          React.createElement("div", { style: { paddingTop: 24 } },
+            React.createElement("p", { style: { fontSize: 13, color: "#64748B", marginBottom: 20 } }, "Track your artifact counts. Progress is measured by what you build, not days you show up."),
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } },
+              ARTIFACT_CATEGORIES.map(function(cat) {
+                var count = artifactCounts[cat.key] || 0;
+                var pct = Math.min(100, Math.round((count / cat.target) * 100));
+                return React.createElement("div", { key: cat.key, style: { background: "white", borderRadius: 12, padding: 16, border: "1px solid #E2E8F0" } },
+                  React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
+                    React.createElement("span", { style: { fontSize: 13, fontWeight: 600 } }, cat.icon + " " + cat.label),
+                    React.createElement("span", { style: { fontSize: 11, color: "#94A3B8" } }, "Goal: " + cat.target)
+                  ),
+                  React.createElement("div", { style: { fontSize: 28, fontWeight: 700, marginBottom: 8, color: pct >= 100 ? "#10B981" : "#1E293B" } }, count),
+                  React.createElement("div", { style: { height: 4, background: "#F1F5F9", borderRadius: 2, marginBottom: 8 } },
+                    React.createElement("div", { style: { height: "100%", width: pct + "%", background: pct >= 100 ? "#10B981" : "#3B82F6", borderRadius: 2, transition: "width 0.3s" } })
+                  ),
+                  React.createElement("div", { style: { display: "flex", gap: 8 } },
+                    React.createElement("button", { onClick: function() { updateArtifact(cat.key, -1); }, style: { flex: 1, padding: "6px 0", border: "1px solid #E2E8F0", borderRadius: 6, background: "white", cursor: "pointer", fontSize: 16, color: "#64748B" } }, "\u2212"),
+                    React.createElement("button", { onClick: function() { updateArtifact(cat.key, 1); }, style: { flex: 1, padding: "6px 0", border: "1px solid #E2E8F0", borderRadius: 6, background: "white", cursor: "pointer", fontSize: 16, color: "#3B82F6", fontWeight: 600 } }, "+")
+                  )
+                );
+              })
+            )
+          )
+        :
+          // Roadmap
+          React.createElement("div", { style: { paddingTop: 16 } },
+            // Phase selector
+            React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", padding: "8px 0 16px", WebkitOverflowScrolling: "touch" } },
+              PHASES.map(function(phase) {
+                return React.createElement("button", {
+                  key: phase.id,
+                  onClick: function() { setActivePhase(phase.id); setExpandedSprint(null); },
+                  style: {
+                    flexShrink: 0, padding: "8px 14px", borderRadius: 8, border: "none", cursor: "pointer",
+                    fontSize: 12, fontWeight: 600, whiteSpace: "nowrap",
+                    background: activePhase === phase.id ? phase.color : "#F1F5F9",
+                    color: activePhase === phase.id ? "white" : "#64748B",
+                    transition: "all 0.2s",
+                  }
+                }, "Phase " + phase.id);
+              })
+            ),
+            // Active phase
+            PHASES.filter(function(p) { return p.id === activePhase; }).map(function(phase) {
+              return React.createElement("div", { key: phase.id },
+                React.createElement("div", { style: { marginBottom: 20 } },
+                  React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" } },
+                    React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, margin: 0 } }, "Phase " + phase.id + ": " + phase.title),
+                    React.createElement("span", { style: { fontSize: 11, color: "#94A3B8", background: "#F1F5F9", padding: "2px 8px", borderRadius: 4 } }, phase.days)
+                  ),
+                  React.createElement("p", { style: { fontSize: 13, color: "#64748B", margin: 0 } }, phase.description),
+                  React.createElement("div", { style: { marginTop: 8, height: 4, background: "#F1F5F9", borderRadius: 2 } },
+                    React.createElement("div", { style: { height: "100%", width: getPhaseProgress(phase) + "%", background: phase.color, borderRadius: 2, transition: "width 0.3s" } })
+                  ),
+                  React.createElement("div", { style: { fontSize: 11, color: "#94A3B8", marginTop: 4 } }, getPhaseProgress(phase) + "% complete")
+                ),
+                // Sprints
+                phase.sprints.map(function(sprint) {
+                  var isExpanded = expandedSprint === sprint.id;
+                  var sprintPct = getSprintProgress(sprint);
+                  return React.createElement("div", { key: sprint.id, style: { marginBottom: 12, background: "white", borderRadius: 12, border: "1px solid #E2E8F0", overflow: "hidden" } },
+                    React.createElement("button", {
+                      onClick: function() { setExpandedSprint(isExpanded ? null : sprint.id); },
+                      style: { width: "100%", padding: "16px", border: "none", background: "none", cursor: "pointer", textAlign: "left", display: "flex", justifyContent: "space-between", alignItems: "center" }
+                    },
+                      React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 14, fontWeight: 700, color: "#1E293B", marginBottom: 2 } }, "Sprint " + sprint.id + ": " + sprint.title),
+                        React.createElement("div", { style: { fontSize: 12, color: "#94A3B8" } }, sprint.days),
+                        React.createElement("div", { style: { display: "flex", gap: 4, marginTop: 6, flexWrap: "wrap" } },
+                          sprint.tools.map(function(tool, i) {
+                            return React.createElement("span", { key: i, style: { fontSize: 10, padding: "2px 6px", background: "#F1F5F9", borderRadius: 4, color: "#64748B" } }, tool);
+                          })
+                        )
+                      ),
+                      React.createElement("div", { style: { textAlign: "right", flexShrink: 0 } },
+                        React.createElement("div", { style: { fontSize: 20, fontWeight: 700, color: sprintPct === 100 ? "#10B981" : phase.color } }, sprintPct + "%"),
+                        React.createElement("div", { style: { fontSize: 18, transform: isExpanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s", color: "#94A3B8" } }, "\u25BE")
+                      )
+                    ),
+                    isExpanded && React.createElement("div", { style: { padding: "0 16px 16px", borderTop: "1px solid #F1F5F9" } },
+                      React.createElement("div", { style: { padding: "12px 0 8px", fontSize: 12, color: "#64748B", fontStyle: "italic" } }, sprint.problem),
+                      React.createElement("div", { style: { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#94A3B8", marginTop: 12, marginBottom: 8 } }, "DAILY TASKS"),
+                      sprint.tasks.map(function(task) {
+                        return React.createElement("div", {
+                          key: task.day,
+                          onClick: function() { toggleTask(task.day); },
+                          style: { display: "flex", gap: 10, padding: "10px 0", borderBottom: "1px solid #F8FAFC", cursor: "pointer", opacity: completedTasks[task.day] ? 0.5 : 1, transition: "opacity 0.2s" }
+                        },
+                          React.createElement("div", {
+                            style: {
+                              width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+                              border: completedTasks[task.day] ? "none" : "2px solid #CBD5E1",
+                              background: completedTasks[task.day] ? phase.color : "transparent",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              color: "white", fontSize: 12,
+                            }
+                          }, completedTasks[task.day] ? "\u2713" : ""),
+                          React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                            React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: "#334155", marginBottom: 2 } },
+                              React.createElement("span", { style: { color: "#94A3B8", marginRight: 6 } }, "Day " + task.day),
+                              task.focus
+                            ),
+                            React.createElement("div", { style: { fontSize: 11, color: "#94A3B8" } }, "\u2192 " + task.artifact)
+                          )
+                        );
+                      }),
+                      React.createElement("div", { style: { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#94A3B8", marginTop: 20, marginBottom: 8 } }, "SUCCESS CHECKLIST"),
+                      sprint.checklist.map(function(item, idx) {
+                        var key = sprint.id + "-" + idx;
+                        var checked = completedChecklist[key];
+                        return React.createElement("div", {
+                          key: idx,
+                          onClick: function() { toggleChecklist(sprint.id, idx); },
+                          style: { display: "flex", gap: 10, padding: "8px 0", cursor: "pointer", alignItems: "flex-start" }
+                        },
+                          React.createElement("div", {
+                            style: {
+                              width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                              border: checked ? "none" : "2px solid #CBD5E1",
+                              background: checked ? "#10B981" : "transparent",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              color: "white", fontSize: 11,
+                            }
+                          }, checked ? "\u2713" : ""),
+                          React.createElement("span", { style: { fontSize: 12, color: checked ? "#94A3B8" : "#475569", textDecoration: checked ? "line-through" : "none" } }, item)
+                        );
+                      })
+                    )
+                  );
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
