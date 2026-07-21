@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Learning AI with Kate - 180 Days of AI & Automation</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F2; --card:#FFFFFF; --ink:#3B3733; --ink-soft:#8A837B;
+  --sage:#A8B5A0; --sage-deep:#6E7F66; --sage-wash:#EEF1EA;
+  --lavender:#B9AFC9; --lav-deep:#8B7FA3; --lav-wash:#F1EEF5;
+  --clay:#C98A6B; --clay-wash:#F6EDE7;
+  --line:#E8E2D8; --radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+::selection{background:var(--sage);color:#fff}
+button{font-family:inherit;cursor:pointer}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+.fade{animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.5/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect}=React;
+
+const PHASES=[
+{id:1,title:"AI Foundations",days:"Days 1-30",color:"#3B82F6",
+description:"Learn to think with AI, not just use AI.",
+sprints:[
+{id:1,title:"Learn to Think with AI",days:"Days 1-15",
+tools:["Claude","Anthropic Learn"],
+problem:"You know AI exists but don't have a systematic way to think with it - to break down problems, give clear instructions, and get consistently useful outputs.",
+objective:"Learn how Claude thinks, how to write effective prompts, and how to use AI for everyday EA tasks like drafting, summarizing, and brainstorming.",
+skills:["How large language models work (conceptual, not technical)","Prompt structure: role, context, task, format, constraints","Zero-shot vs few-shot prompting","Iterative prompting (refining outputs)","Negative prompting (constraints and boundaries)","System prompts and custom instructions","Prompt chaining (output of one feeds the next)","Claude Projects and persistent AI workspaces"],
+resources:["Anthropic Learn: \"Prompt Engineering\" course (all modules) - Free","Anthropic Learn: \"Real-World Prompting\" course - Free","Claude documentation: prompt engineering overview - Free","AI Automation PH YouTube: Claude/prompting videos - Free"],
+useCases:["Drafting emails that match your executive's voice","Summarizing reports, articles, and meeting transcripts","Creating first drafts of any document","Brainstorming solutions to operational problems","Proofreading and improving written communication"],
+exercises:["Take a real email you've sent this week. Ask Claude to improve it three different ways (more concise, more formal, more persuasive). Compare.","Paste a long article or report. Ask Claude for a 3-bullet executive summary, then a detailed briefing. Notice what changes.","Write the same prompt 3 different ways. See how the output shifts based on how you frame the request."],
+miniProject:{title:"Email Template Library",desc:"Create 10 reusable email prompts for common EA scenarios: scheduling, follow-ups, introductions, apologies, status updates, meeting requests, thank-yous, cancellations, reminders, escalations."},
+portfolioProject:{title:"The EA Prompt Starter Kit",desc:"A polished collection of 15-20 prompts organized by category (communication, research, planning, writing) with instructions on how to customize each one for any executive's style."},
+mistakes:["Writing vague prompts (\"help me with an email\") instead of specific ones","Not giving context about tone, audience, or purpose","Accepting the first output without iterating","Over-engineering prompts when simple instructions work fine","Forgetting to specify the output format you want"],
+tasks:[
+{day:1,course:{name:"Claude 101",duration:"2-3 hrs",type:"anthropic"},focus:"What is Claude? How do LLMs work? Explore the interface.",artifact:"Cheat sheet: \"What AI Can and Can't Do\"",detail:"Spend today exploring Claude's interface. Try different types of questions: factual, creative, analytical. Note what it does well and where it struggles. Your cheat sheet should be something you can reference later."},
+{day:2,course:{name:"Claude Platform 101",duration:"1 hr",type:"anthropic"},focus:"Prompt structure: role + context + task",artifact:"3 prompts using role-context-task format",detail:"The foundation of good prompting. Every prompt should tell Claude WHO it is (role), WHAT it needs to know (context), and WHAT you want it to do (task). Write 3 prompts for real EA tasks using this structure."},
+{day:3,focus:"Output formatting: bullets, tables, step-by-step",artifact:"Prompt: \"Format a weekly executive update\"",detail:"Claude can output in any format you specify. Practice asking for tables, numbered lists, headers, and specific structures. Your exec update prompt should produce a clean, scannable format."},
+{day:4,focus:"Few-shot prompting: teaching by example",artifact:"Prompt: \"Draft a professional email\" with tone examples",detail:"Instead of describing the tone you want, SHOW Claude examples. Paste 2-3 sample emails and say \"write in this style.\" This is one of the most powerful techniques for matching your executive's voice."},
+{day:5,focus:"Iterative prompting: improving through conversation",artifact:"Prompt chain: rough draft, refined, final",detail:"Don't try to get the perfect output in one shot. Start with a rough draft prompt, then refine: \"Make it shorter,\" \"More formal tone,\" \"Add a call to action.\" Document the chain so you can reuse the pattern."},
+{day:6,focus:"Summarization: turning long content into key points",artifact:"Prompt: \"Summarize meeting notes into action items\"",detail:"This is one of the highest-value EA skills. Practice with different summary types: executive summary (2-3 sentences), key decisions, action items with owners, and open questions."},
+{day:7,course:{name:"AI Fluency: Framework & Foundations",duration:"1 hr",type:"anthropic"},focus:"Review day. Organize everything so far.",artifact:"Prompt library v1 (organized by category)",detail:"Take all the prompts you've created this week and organize them into categories (Communication, Research, Planning, etc.). This library will grow to 50+ prompts by Day 180."},
+{day:8,focus:"Negative prompting: constraints and boundaries",artifact:"5 improved prompts with \"do not\" rules",detail:"Telling Claude what NOT to do is as important as telling it what to do. \"Do not use jargon,\" \"Do not exceed 100 words,\" \"Do not include disclaimers.\" Go back to 5 earlier prompts and add constraints."},
+{day:9,focus:"System prompts: setting Claude's persona and behavior",artifact:"System prompt: \"EA Writing Assistant\"",detail:"System prompts set persistent rules for how Claude behaves. Create one that defines Claude as your writing assistant: tone, vocabulary, formatting preferences, things to always/never include."},
+{day:10,focus:"Prompt chaining: multi-step sequences",artifact:"Chain: research, outline, draft, polish",detail:"Complex tasks work better as chains. Step 1: research a topic. Step 2: create an outline from the research. Step 3: draft from the outline. Step 4: polish the draft. Document each step."},
+{day:11,focus:"Structured outputs: tables, JSON, specific formats",artifact:"Prompt: \"Create a structured meeting agenda\"",detail:"Practice getting Claude to output in precise structures: tables with specific columns, checklists with categories, agendas with time blocks. The meeting agenda should be ready to paste into a doc."},
+{day:12,focus:"Claude Projects: creating persistent AI workspaces",artifact:"Claude Project: \"Email Drafting Assistant\"",detail:"Claude Projects let you save custom instructions and upload reference documents. Set up your first Project with your executive's communication style, common contacts, and email templates."},
+{day:13,course:{name:"AI Capabilities and Limitations",duration:"1 hr",type:"anthropic"},focus:"Adding knowledge to Projects (uploading context docs)",artifact:"Claude Project with uploaded style guide or SOPs",detail:"Upload documents that give Claude context: your company's style guide, SOPs, org chart, or communication templates. The more relevant context, the better the outputs."},
+{day:14,focus:"Template prompts inside Projects",artifact:"5 reusable template prompts in your Projects",detail:"Create starter prompts within your Projects that you'll use repeatedly: \"Draft a follow-up email to [name] about [topic],\" \"Summarize this meeting transcript,\" etc."},
+{day:15,focus:"Sprint review. Polish and document everything.",artifact:"Sprint 1 summary + public learning post",detail:"Review everything you built this sprint. Improve your weakest prompts. Write a reflection on what you learned. Post a summary of your Sprint 1 journey."},
+],
+checklist:["Can explain how Claude works to a colleague","Can write prompts with clear role, context, task, and format","Can use few-shot prompting with examples","Can iterate on output to improve quality","Have a prompt library with 15+ organized prompts","Have 2+ Claude Projects set up and tested","Have posted 7+ public learning updates"],
+},
+{id:2,title:"Build Your Personal AI System",days:"Days 16-30",
+tools:["Claude","Notion (free)","Google Docs/Sheets"],
+problem:"Your notes, prompts, and ideas are scattered everywhere. You need a personal system - a \"second brain\" - that organizes everything you're building and makes it easy to find, reuse, and share.",
+objective:"Build a personal knowledge management system that grows with you throughout the roadmap and becomes a career asset.",
+skills:["Personal knowledge management","Building a prompt library with categories and tags","Creating a learning log / build log","SOP creation (documenting your own processes)","Organizing digital assets for retrieval","AI-assisted documentation"],
+resources:["Notion official tutorials - Free","YouTube: \"Second brain\" and \"personal knowledge management\" videos - Free","Anthropic Learn: revisit modules on document creation - Free"],
+useCases:["Having every prompt you've ever created organized and searchable","Quickly finding the right SOP when a recurring task comes up","Tracking what you've learned and what you still need to learn","Documenting processes so you can train others or create content later","Building a body of work that becomes your portfolio"],
+exercises:["Take 3 tasks you do regularly at work. Write an SOP for each using Claude to help structure them.","Go through your last 2 weeks of learning. Organize every prompt, note, and resource into your system.","Ask a friend or colleague to find something in your system. If they can't find it in under 60 seconds, your organization needs work."],
+miniProject:{title:"Personal AI Dashboard",desc:"A single page (in Notion or Google Docs) that links to your Prompt Library, Build Log, SOP Library, Knowledge Vault, and Learning Database. Your daily starting point."},
+portfolioProject:{title:"Building a Second Brain for Executive Assistants",desc:"Document your entire personal AI system: what it contains, how it's organized, why you chose this structure, and how other EAs can build their own. Include screenshots and templates."},
+mistakes:["Over-designing the system before using it (build minimum, then improve)","Not using the system daily (a system you don't use rots fast)","Making categories too granular (start with 5-7 broad categories, split later)","Spending more time organizing than creating","Not backfilling early work into the system"],
+tasks:[
+{day:16,focus:"Design your personal AI system. What do you need?",artifact:"System architecture document",detail:"Before building, plan. What components do you need? Prompt Library, Build Log, Knowledge Vault, SOP Library, Learning Database, AI Journal, Bookmark System. Sketch the structure."},
+{day:17,focus:"Set up your Prompt Library (organized by category)",artifact:"Prompt Library with categories and 20+ entries",detail:"Migrate all prompts from Sprint 1 into a structured library. Categories might include: Communication, Research, Meetings, Writing, Planning, Analysis. Add tags for easy searching."},
+{day:18,focus:"Set up your Build Log (daily record of what you create)",artifact:"Build Log template + first 15 entries",detail:"Create a simple log: Date, What I Built, Category, Link/Location, Notes. Backfill all 15 days so far. This becomes your proof of consistency."},
+{day:19,focus:"Set up your Knowledge Vault (notes, insights, resources)",artifact:"Knowledge Vault structure with 3+ sections",detail:"This is where your learning notes live. Organize by topic (AI Concepts, Prompting Techniques, Tool Notes) or by sprint. Include key takeaways, not just links."},
+{day:20,focus:"Set up your SOP Library",artifact:"SOP Library template + first SOP: \"How I Write Prompts\"",detail:"Create a template for SOPs: Title, Purpose, Prerequisites, Steps, Tips, Last Updated. Write your first SOP about your own prompting process."},
+{day:21,focus:"Set up your Learning Database",artifact:"Learning tracker with everything consumed so far",detail:"Track every resource you've consumed: Name, Type (video/article/course), Source, Date, Key Takeaway, Rating. This helps you recommend resources to others later."},
+{day:22,focus:"Review day. Connect the pieces.",artifact:"Refined personal AI system",detail:"Step back and look at the whole system. Is it easy to navigate? Can you get from your dashboard to any specific prompt in 3 clicks? Fix friction points."},
+{day:23,focus:"Create your AI Journal",artifact:"AI Journal template + 5 entries",detail:"A journal for reflecting on AI usage: What did I use AI for today? What worked? What didn't? What would I do differently? Backfill 5 entries from previous days."},
+{day:24,focus:"Build a Bookmark System",artifact:"Organized bookmark system with 30+ entries",detail:"Collect and organize all the useful links you've found: tutorials, documentation, tools, articles, community posts. Tag them so you can find them when needed."},
+{day:25,focus:"Create SOP: \"How I Prepare for Meetings with AI\"",artifact:"Complete SOP with steps and prompt examples",detail:"Document your meeting prep process step by step: what information to gather, which prompts to use, what the output should look like, how to customize for different meeting types."},
+{day:26,focus:"Create SOP: \"How I Draft Emails with AI\"",artifact:"Complete SOP with steps and prompt examples",detail:"Document your email drafting workflow: how to brief Claude, which prompts to use, how to match your executive's voice, quality checks before sending."},
+{day:27,focus:"Create SOP: \"How I Research a Topic with AI\"",artifact:"Complete SOP with steps and prompt examples",detail:"Document your research process: how to frame research questions, how to use Claude for synthesis, how to format findings for your executive, when to verify AI outputs."},
+{day:28,focus:"Create a reusable template: \"Weekly Review\"",artifact:"Weekly review template",detail:"A template you'll use every Friday: What did I build this week? What worked? What didn't? What's the plan for next week? Artifact count update. Public learning post draft."},
+{day:29,focus:"Stress-test your system. Can you find things quickly?",artifact:"Improvements log + system refinements",detail:"Try to find 10 random things in your system as fast as possible. Time yourself. Anything that takes more than 60 seconds needs better organization. Log every improvement you make."},
+{day:30,focus:"Phase 1 complete. Sprint review. Milestone check.",artifact:"Milestone review + public learning post",detail:"Big milestone! Review your artifact counts against targets. Write an honest assessment of your skills. Celebrate your progress. Post your Phase 1 reflection."},
+],
+checklist:["Have a working personal AI system with 5+ components","Prompt Library has 25+ entries organized by category","Build Log is up to date with 25+ entries","Have 5+ SOPs documented","Knowledge Vault has organized notes","System is something you actually use daily","Have posted 15+ public learning updates total"],
+},
+]},
+{id:2,title:"AI-Powered EA",days:"Days 31-60",color:"#8B5CF6",
+description:"Use AI to be dramatically better at the actual work you do every day.",
+sprints:[
+{id:3,title:"Master Executive Communication",days:"Days 31-45",
+tools:["Claude","Gmail","Google Docs","Google Drive"],
+problem:"Executive communication - emails, memos, reports, follow-ups - eats a massive chunk of your day. You need a system that helps you draft faster, write better, and never miss a follow-up.",
+objective:"Build a complete communication system: email templates, voice matching, triage framework, follow-up tracking, and document creation workflows.",
+skills:["AI-assisted email drafting and editing","Email management systems (labels, filters, templates)","Writing in your executive's voice consistently","Document creation workflows (memos, reports, briefs)","Follow-up tracking systems","Gmail power features (templates, filters, scheduled send)"],
+resources:["Google Workspace Learning Center - Free","YouTube: \"Gmail productivity tips\" and \"Google Docs advanced features\" - Free","AI Automation PH YouTube: communication/email content - Free"],
+useCases:["Drafting 10+ emails per day with consistent quality","Never missing a follow-up with a client or stakeholder","Creating memos and briefs in your executive's exact voice","Tracking who needs responses and by when","Turning meeting notes into action emails within minutes"],
+exercises:["Take 5 emails your executive sent last week. Feed them to Claude and build a style guide. Then draft a new email using that style guide and compare.","Set up 5 Gmail filters that automatically label and sort your most common email types.","Create an end-to-end workflow: receive a meeting transcript, extract action items, draft follow-up emails for each attendee."],
+miniProject:{title:"Email Triage Assistant",desc:"A complete system: Gmail filters for auto-sorting + Claude prompts for categorizing tricky emails + templates for rapid responses + a follow-up tracker that surfaces overdue items."},
+portfolioProject:{title:"How I Automated Executive Communication",desc:"A case study showing your before/after email workflow, the tools and prompts you use, time saved, and how other EAs can replicate it."},
+mistakes:["Creating templates that are too rigid (good templates have clear customization points)","Not testing your executive's voice prompt with real scenarios","Over-automating email (some emails need a human touch, know which ones)","Building a follow-up tracker and not checking it daily"],
+tasks:[
+{day:31,course:{name:"Introduction to Claude Cowork",duration:"1-1.5 hrs",type:"anthropic"},focus:"Audit your current email workflow. Where are the bottlenecks?",artifact:"Current state assessment document",detail:"Before building, understand the problem. How many emails do you handle daily? What types? Where do you spend the most time? Where do things fall through the cracks? Be honest."},
+{day:32,focus:"Gmail power features: labels, filters, templates",artifact:"SOP: \"My Gmail Management System\"",detail:"Set up Gmail's built-in productivity tools: create a label system (by priority, by project, by person), set up filters for automatic sorting, and enable templates for common replies."},
+{day:33,focus:"Build an email triage system: categorize, prioritize, route",artifact:"Email triage framework template",detail:"Create a framework: Urgent (respond within 1 hour), Action Needed (respond today), FYI (read and archive), Delegate (forward to right person). Define criteria for each category."},
+{day:34,focus:"AI email drafting: create prompts for 5 common email types",artifact:"5 email prompts (follow-up, intro, bad news, request, update)",detail:"Build prompts for your most common email types. Each should include: who the recipient is, the context, the desired tone, and the call to action. Test with real scenarios."},
+{day:35,focus:"Matching your executive's voice: style guides and examples",artifact:"Executive voice style guide + system prompt",detail:"Collect 10+ emails from your executive. Analyze: sentence length, formality level, common phrases, how they start/end emails. Build a style guide and a system prompt that captures this."},
+{day:36,focus:"Claude Project: \"Executive Email Assistant\"",artifact:"Claude Project fully configured",detail:"Set up a Claude Project with your executive's style guide, common contacts, company context, and template prompts. This becomes your go-to workspace for all email drafting."},
+{day:37,focus:"Review day. Test your email system with real scenarios.",artifact:"Refined email system + documentation",detail:"Take 5 real email scenarios from the past week. Run them through your new system. Does the triage work? Do the templates save time? Does the voice match? Fix what doesn't work."},
+{day:38,focus:"Google Docs: templates for memos, briefs, and reports",artifact:"3 document templates in Google Docs",detail:"Create polished templates for your most common documents. Include placeholder text, formatting guidelines, and sections. Save them in a shared Drive folder for easy access."},
+{day:39,focus:"AI-assisted writing: research, draft, edit workflow",artifact:"Workflow: \"How I Create Executive Documents\"",detail:"Document your complete workflow: how you research the topic, create an outline, draft with Claude, edit for accuracy, format for your executive, and get feedback."},
+{day:40,focus:"Proofreading and editing with AI",artifact:"Editing prompt + quality checklist template",detail:"Create a prompt that checks for: grammar, clarity, tone consistency, jargon, passive voice, and length. Build a quality checklist you run through before sending anything."},
+{day:41,focus:"Follow-up tracking: never let anything slip",artifact:"Follow-up tracker (Sheets or Notion)",detail:"Build a tracker with columns: Person, Subject, Date Sent, Expected Response Date, Status, Next Action. Set up a daily review habit. This is one of the highest-value EA tools."},
+{day:42,focus:"Meeting follow-up workflow: notes, actions, emails",artifact:"End-to-end meeting follow-up SOP",detail:"From meeting notes to done: extract action items, assign owners, draft individual follow-up emails, set reminders, track completion. Document every step."},
+{day:43,focus:"Communication templates: recurring messages you send weekly",artifact:"10 reusable communication templates",detail:"Think about messages you send every week: status updates, meeting reminders, scheduling requests, thank yous. Create templates for all of them with clear customization points."},
+{day:44,focus:"Building a stakeholder communication tracker",artifact:"Stakeholder tracker template",detail:"Track who your executive communicates with regularly: name, role, relationship, last contact, preferred channel, key topics, next touchpoint. This prevents relationships from going cold."},
+{day:45,focus:"Sprint review. Document everything.",artifact:"Sprint 3 summary + public learning post",detail:"Review everything you built. Update your personal AI system with new prompts, SOPs, and templates. Write your Sprint 3 reflection and share your progress."},
+],
+checklist:["Gmail has a working filter and label system","Have 10+ email templates ready","Claude Project for email matches your executive's voice","Follow-up tracker is populated and checked daily","Have a working document creation workflow","Can draft an executive-quality email in under 5 minutes","Have 5+ new SOPs added to your library"],
+},
+{id:4,title:"Own Meetings, Research & Knowledge",days:"Days 46-60",
+tools:["Claude","Google Calendar","Google Sheets","Google Docs"],
+problem:"Meetings are where executives make decisions. Research is how they make good ones. If you can own the meeting lifecycle and become the person who always has the right information ready, you become irreplaceable.",
+objective:"Build complete systems for meeting management (prep through follow-up), research synthesis, and knowledge organization.",
+skills:["Meeting lifecycle management (prep, agenda, notes, follow-up)","Research workflows (question, gather, synthesize, brief)","Document analysis (extracting key info from long documents)","Calendar management systems","Google Sheets intermediate features (VLOOKUP, conditional formatting, data validation)","Building repeatable research processes"],
+resources:["Google Workspace Learning Center: Calendar and Sheets tutorials - Free","YouTube: \"Google Sheets for beginners\" and \"calendar management tips\" - Free","Anthropic Learn: modules on document analysis or research - Free"],
+useCases:["Creating meeting briefs that executives actually read","Turning 30-page reports into 1-page summaries","Building calendar systems that prevent scheduling chaos","Producing weekly briefings from multiple information sources","Tracking projects and tasks across multiple workstreams"],
+exercises:["Pick a real upcoming meeting. Use your Meeting Prep system to create a full brief: attendee background, agenda, talking points, potential questions, follow-up items.","Take a long document (report, article, contract) and create a one-page executive summary, then compare it to what you'd have written manually.","Build a Google Sheet tracker for one process you manage with conditional formatting that highlights overdue items."],
+miniProject:{title:"Meeting Lifecycle System",desc:"From prep to follow-up: research attendees, create agenda, generate talking points, template for meeting notes, extract action items, draft follow-up emails, track completion."},
+portfolioProject:{title:"The AI-Powered Meeting System for Executive Assistants",desc:"A complete case study showing how you manage the entire meeting lifecycle with AI. Include the Claude Project setup, templates, workflows, sample outputs, and estimated time saved per meeting."},
+mistakes:["Creating meeting briefs that are too long (your executive wants 1 page, not 10)","Not customizing research depth to the meeting type","Building trackers in Google Sheets when a simpler tool would work","Forgetting to update your knowledge management system"],
+tasks:[
+{day:46,focus:"Map the meeting lifecycle: before, during, after",artifact:"Meeting lifecycle framework document",detail:"Draw out the complete meeting lifecycle. Before: research, agenda, prep brief, logistics. During: notes, decisions, action items. After: summary, follow-ups, task tracking. This framework guides everything you build."},
+{day:47,focus:"Meeting prep: researching attendees and topics with AI",artifact:"SOP: \"How to Prepare Meeting Briefs with AI\"",detail:"Document your process: gather attendee names, use Claude to research backgrounds, compile relevant history, identify talking points, flag potential sensitive topics. Include prompt templates for each step."},
+{day:48,focus:"Claude Project: \"Meeting Prep Assistant\"",artifact:"Claude Project with context and templates",detail:"Set up a dedicated Claude Project for meeting prep. Upload your company context, executive preferences, and meeting brief templates. Add starter prompts for different meeting types."},
+{day:49,focus:"Agenda creation: templates and AI-assisted drafting",artifact:"3 agenda templates (internal, client, board-level)",detail:"Different meetings need different agendas. Internal: quick and informal. Client: structured with clear objectives. Board-level: formal with time allocations. Create a template for each."},
+{day:50,focus:"Meeting notes, action items, assignments workflow",artifact:"Meeting follow-up workflow (end to end)",detail:"Build the complete post-meeting workflow: take notes (or process transcript), extract decisions and action items, assign owners and deadlines, draft follow-up emails, add tasks to tracker."},
+{day:51,focus:"Google Calendar power features",artifact:"SOP: \"Calendar Management System\"",detail:"Set up your calendar system: color coding by meeting type, event templates with default descriptions, reminder settings, scheduling blocks, and a naming convention that makes the calendar scannable."},
+{day:52,course:{name:"AI Fluency for Builders + Small Businesses",duration:"1.5 hrs",type:"anthropic"},focus:"Review day. Run your meeting system on a real meeting.",artifact:"Test results + refinements",detail:"Take a real meeting (upcoming or recent) and run it through your complete system: prep brief, agenda, notes template, follow-up workflow. Time yourself. Note what works and what's friction."},
+{day:53,focus:"Research with AI: from question to executive briefing",artifact:"Research workflow template",detail:"Build a repeatable research workflow: frame the question, identify sources, use Claude to synthesize, format as executive briefing, include sources and caveats. Document each step with prompt templates."},
+{day:54,focus:"Document analysis: extracting key info from long reports",artifact:"Prompt: \"Analyze and summarize this document\"",detail:"Create prompts for different document types: contracts (extract key terms and obligations), reports (extract findings and recommendations), articles (extract main argument and evidence)."},
+{day:55,focus:"Comparing documents: finding changes and differences",artifact:"Prompt: \"Compare versions and highlight changes\"",detail:"Build a prompt that compares two versions of a document and highlights: what was added, what was removed, what was changed, and what the changes mean. Useful for contract revisions, policy updates."},
+{day:56,focus:"Google Sheets: building trackers",artifact:"Project tracker template in Google Sheets",detail:"Build a project tracker with: Project Name, Status, Owner, Start Date, Due Date, Priority, Notes, Last Updated. Add data validation for Status and Priority columns."},
+{day:57,focus:"Google Sheets: conditional formatting and data validation",artifact:"Enhanced tracker with visual indicators",detail:"Add conditional formatting: red for overdue, yellow for due this week, green for on track. Add dropdown menus for status fields. Make the tracker scannable at a glance."},
+{day:58,focus:"Weekly executive briefing: building the full workflow",artifact:"Weekly Briefing Generator (prompts + template)",detail:"Build a system that compiles a weekly briefing: key meetings this week, project updates, pending decisions, important dates, and items needing executive attention. Create the template and the prompts that fill it."},
+{day:59,focus:"Knowledge management: organizing for retrieval",artifact:"Updated Knowledge Vault",detail:"Take everything you've learned in Sprint 3-4 and organize it in your Knowledge Vault. Update your SOP Library, Template Library, and Prompt Library with all new additions."},
+{day:60,focus:"Phase 2 complete. Sprint review. Milestone check.",artifact:"Milestone review + public learning post",detail:"Phase 2 milestone! Check artifact counts. Assess your skills honestly. Are you using AI daily in your real work? Write your Phase 2 reflection and celebrate your progress."},
+],
+checklist:["Have a complete meeting lifecycle system","Claude Project for meeting prep is tested and reliable","Can create a research briefing in 15 minutes","Google Calendar is organized with a consistent system","Have a working project tracker in Google Sheets","Weekly Briefing Generator produces polished output","Have posted 30+ public learning updates total"],
+},
+]},
+{id:3,title:"Business Operations",days:"Days 61-90",color:"#EC4899",
+description:"Move from supporting tasks to managing systems.",
+sprints:[
+{id:5,title:"Solve Real EA Challenges",days:"Days 61-75",
+tools:["Claude","Google Workspace","Your personal AI system"],
+problem:"Most AI tutorials never address the real, high-stakes challenges EAs face daily. CEO meeting prep is different from team meeting prep. Travel planning has real consequences if you get it wrong. This sprint makes your portfolio relevant to actual hiring managers.",
+objective:"Build systems that solve the hardest parts of executive support: CEO prep, travel, board reports, events, confidential docs, and priority tracking.",
+skills:["Executive travel planning and logistics","Board meeting and board report preparation","Confidential document handling and protocols","Executive priority tracking and alignment","Event and offsite planning","Stakeholder management"],
+resources:["YouTube: search \"executive assistant\" + each specific topic - Free","LinkedIn: follow experienced EAs who post about these challenges - Free","Your own work experience (apply everything to real scenarios)"],
+useCases:["Preparing a CEO for a high-stakes client meeting in under 30 minutes","Planning a multi-city executive trip with backup contingencies","Creating a board report package with all required components","Organizing a 50-person offsite from venue to agenda","Managing confidential documents with proper access controls"],
+exercises:["Plan a hypothetical 3-day executive trip to Singapore: flights, hotels, ground transport, meetings schedule, restaurant reservations, backup plans.","Create a board report template based on research into what boards typically want to see.","Build an executive priority tracker that shows top 5 priorities an executive could glance at in 30 seconds."],
+miniProject:{title:"The EA Playbook",desc:"A collection of 8-10 SOPs covering the hardest parts of executive support, each with step-by-step instructions, AI prompts, templates, and pro tips."},
+portfolioProject:{title:"Executive Support Systems: A Case Study",desc:"Pick your 3 strongest challenge solutions and write them up as case studies. For each: the challenge, your approach, the system you built, and how it would save time in a real role."},
+mistakes:["Making solutions too generic instead of specific to real scenarios","Skipping the confidential document challenge (this is a real skill gap)","Not stress-testing with edge cases (flight cancellation, last-minute changes)","Creating beautiful templates nobody would actually use under time pressure"],
+tasks:[
+{day:61,focus:"Challenge: How do I prepare a CEO for an important meeting?",artifact:"SOP + prompts: \"CEO Meeting Prep\"",detail:"CEO prep is different from regular meeting prep. Higher stakes, deeper research, more strategic talking points. Build a system that covers: attendee research, relationship history, strategic objectives, potential landmines, and recommended positions."},
+{day:62,focus:"Build the full CEO prep workflow",artifact:"Complete CEO meeting prep system",detail:"Take yesterday's SOP and build out the full system: Claude prompts for research, a brief template with all sections, a timing guide (how far in advance to start), and a quality checklist."},
+{day:63,focus:"Challenge: How do I plan executive travel?",artifact:"SOP: \"Executive Travel Planning Checklist\"",detail:"Cover every aspect: flights (preferences, loyalty programs), hotels (location, amenities), ground transport, timezone management, meeting logistics, restaurant reservations, emergency contacts, backup plans for delays."},
+{day:64,focus:"Create a travel planning template",artifact:"Travel template + packing list generator",detail:"Build a comprehensive travel document template: daily itinerary with times and addresses, travel documents checklist, expense tracking, contact list, and a Claude prompt that generates a customized packing list based on destination and meeting types."},
+{day:65,focus:"Challenge: How do I manage confidential documents?",artifact:"SOP: \"Confidential Document Protocol\"",detail:"Cover classification levels, access controls, sharing procedures, storage requirements, naming conventions, version control, and what to do if something is shared inappropriately. This is a real skill gap for many EAs."},
+{day:66,focus:"Challenge: How do I prepare a board report?",artifact:"Board report template + preparation SOP",detail:"Research what boards typically expect: financial overview, strategic updates, key decisions needed, risk assessment, appendix with supporting data. Create a template and a timeline for gathering information."},
+{day:67,course:{name:"Claude Code 101",duration:"1-1.5 hrs",type:"anthropic"},focus:"Review day. Test all systems with realistic scenarios.",artifact:"Refined systems + documentation",detail:"Take each system you've built and stress-test it. What if the CEO's flight gets cancelled? What if a board member asks for information not in the report? Fix the gaps."},
+{day:68,focus:"Challenge: How do I organize an offsite or team event?",artifact:"Event planning template + timeline checklist",detail:"Cover: venue selection criteria, budget template, agenda design, logistics (travel, accommodation, meals), materials preparation, communication plan, and post-event follow-up."},
+{day:69,focus:"Build the full event planning workflow",artifact:"Complete event planning system",detail:"Expand yesterday's template into a complete system with timeline (12 weeks out to day-of), task assignment templates, vendor communication templates, and contingency plans."},
+{day:70,focus:"Challenge: How do I track executive priorities?",artifact:"Executive priority tracker (Google Sheets)",detail:"Build a tracker showing: Top 5 priorities, status (on track/at risk/blocked), key milestones, dependencies, and next actions. Should be glanceable in 30 seconds. Use conditional formatting heavily."},
+{day:71,focus:"Challenge: How do I manage multiple stakeholders?",artifact:"Stakeholder map template + communication tracker",detail:"Create a stakeholder map (who are they, what do they care about, how often do they need updates) and a communication tracker (last contact, next touchpoint, relationship health)."},
+{day:72,focus:"Challenge: Weekly executive briefing (enhanced)",artifact:"Enhanced weekly briefing system",detail:"Take your briefing system from Sprint 4 and level it up: add stakeholder updates, priority tracking changes, upcoming decisions, and a \"what you need to know\" executive summary section."},
+{day:73,focus:"Challenge: How do I onboard myself to a new executive?",artifact:"\"First 30 Days\" onboarding template for EAs",detail:"If you started supporting a new executive tomorrow, what would you need to learn? Communication preferences, key relationships, recurring meetings, tools, processes, pet peeves. Create a systematic discovery template."},
+{day:74,focus:"Compile all challenges into a \"Real EA Playbook\"",artifact:"EA Playbook v1 (all challenges organized)",detail:"Bring all your challenge solutions into one organized document. This is your signature portfolio piece: a comprehensive guide to executive support that demonstrates real-world competence."},
+{day:75,focus:"Sprint review. Document everything.",artifact:"Sprint 5 summary + public learning post",detail:"Review Sprint 5. This was a content-heavy sprint. Make sure every SOP, template, and system is properly stored in your personal AI system. Share your EA Playbook progress publicly."},
+],
+checklist:["Have 8+ SOPs covering real EA challenges","Each challenge has a working system","Executive priority tracker is functional and clear","Board report template is professional and complete","Travel planning system handles complexity","Could walk into a new EA role and handle these on Day 1"],
+},
+{id:6,title:"Build a Client Operations System",days:"Days 76-90",
+tools:["GoHighLevel (free trial)","Claude","Google Sheets"],
+toolCourses:[{name:"GoHighLevel Official Tutorials",type:"Free",note:"Start with Dashboard Overview, then Contacts, Pipelines, Workflows"},{name:"AI Automation PH YouTube: GHL Series",type:"Free",note:"Kuya RJ's GHL setup and automation videos"},{name:"GHL Help Documentation",type:"Free",note:"Reference for specific features and troubleshooting"},{name:"Technical Virtual Assistants PH Course",type:"Paid (\u20B14,699)",note:"Full GHL training with community support - enroll at Day 90 decision point"}],
+problem:"Executives need systems for managing clients, leads, and business relationships at scale. Understanding CRM and operations makes you valuable beyond administrative support.",
+objective:"Learn CRM concepts, build a working pipeline, create forms and automations, and document a complete client operations system.",
+skills:["CRM concepts (contacts, deals, pipelines, stages)","GoHighLevel navigation and setup","Pipeline design (stages, triggers, outcomes)","Forms and data collection","Calendar booking setup","Basic GHL workflows (trigger, action)","How CRM supports executive decision-making"],
+resources:["AI Automation PH YouTube: GHL basics and setup videos - Free","GoHighLevel official tutorials - Free","GoHighLevel 14-day free trial","GHL help documentation - Free"],
+useCases:["Managing your executive's key client relationships","Tracking a sales or partnership pipeline","Automating appointment scheduling and confirmations","Creating intake forms for new clients or projects","Generating CRM reports for executive review"],
+exercises:["Design a 5-stage pipeline for a real business process. Map what happens at each stage.","Create a form that collects the right information and connects to your pipeline.","Build a 3-step workflow: form submission, contact creation, notification to you."],
+miniProject:{title:"Client Onboarding System",desc:"Form, CRM entry, pipeline placement, welcome email, calendar booking link, follow-up reminder. A complete system from first contact to onboarded."},
+portfolioProject:{title:"CRM Setup Guide for Executive Assistants",desc:"A step-by-step guide showing how an EA would set up a CRM from scratch. Include pipeline templates, tag systems, workflow examples. The documentation is the portfolio piece, even after the trial ends."},
+mistakes:["Creating too many pipeline stages (5-7 is usually enough)","Not establishing a tagging system from the start","Building workflows too complex before understanding basics","Getting lost in features and forgetting to solve a problem"],
+tasks:[
+{day:76,focus:"CRM concepts: what they are, why they matter",artifact:"Cheat sheet: \"CRM for Executive Assistants\"",detail:"Before touching any tool, understand the concepts: contacts, leads, opportunities, pipelines, stages, tags, custom fields. Write a cheat sheet explaining each in plain language."},
+{day:77,focus:"Start GHL free trial. Explore the dashboard.",artifact:"Documentation: \"GHL Platform Overview\"",detail:"Start your 14-day free trial now. Don't build anything yet. Just explore: main menu, settings, contacts area, pipeline view, workflows, forms, calendars. Document what you find."},
+{day:78,focus:"Contacts: adding, tagging, custom fields",artifact:"Contact management SOP + tag system template",detail:"Add 10+ sample contacts. Create a tag system (by type, by status, by source). Add custom fields that would be useful (birthday, company, role, last meeting date). Document your system."},
+{day:79,focus:"Pipelines: designing stages for a business process",artifact:"Pipeline template: \"Client Onboarding\"",detail:"Design a pipeline with 5-7 stages. For each stage: name, definition (what qualifies a contact to be here), actions (what happens at this stage), and exit criteria (when do they move to the next stage)."},
+{day:80,focus:"Building your first pipeline with sample data",artifact:"Working pipeline with 10+ sample contacts",detail:"Build the pipeline in GHL. Add your sample contacts to different stages. Move them through the pipeline manually to understand the flow. Take screenshots for your portfolio."},
+{day:81,focus:"Forms: creating intake and data collection forms",artifact:"Form: \"Client Intake Form\"",detail:"Build a form that collects the information your pipeline needs: name, email, company, what they're looking for, how they found you, preferred contact method, best time to reach them."},
+{day:82,course:{name:"Claude Code in Action",duration:"1.5-2 hrs",type:"anthropic"},focus:"Review day. Test pipeline with realistic scenarios.",artifact:"Refined pipeline + documentation",detail:"Walk through 3 realistic scenarios: a new lead fills out your form, an existing client needs to be moved through stages, a deal falls through. Does your system handle all of these?"},
+{day:83,focus:"Calendar booking: appointment types, availability",artifact:"Calendar: \"Executive Meeting Scheduler\"",detail:"Set up a booking calendar with 2-3 appointment types (15-min intro call, 30-min meeting, 60-min strategy session). Configure availability, buffer times, and confirmation messages."},
+{day:84,focus:"GHL Workflows intro: triggers and actions",artifact:"Cheat sheet: \"GHL Workflow Building Blocks\"",detail:"Learn workflow vocabulary: triggers (what starts it), actions (what happens), conditions (if/then logic), wait steps (delays), and goals (when to stop). Document with examples."},
+{day:85,focus:"Workflow: form, CRM entry, notification",artifact:"Automation: \"New Lead Notification\"",detail:"Build your first real workflow: when someone fills out your form, create/update their contact, assign a tag, and send you a notification. Test it by filling out your own form."},
+{day:86,focus:"Workflow: appointment booking, confirmation email",artifact:"Automation: \"Appointment Confirmation\"",detail:"When someone books an appointment, send them a confirmation email with meeting details, add the event to calendar, and notify you. Test the entire flow."},
+{day:87,focus:"Workflow: pipeline stage change, automated action",artifact:"Automation: \"Pipeline Stage Actions\"",detail:"When a contact moves to a specific pipeline stage, trigger an action: send an email, create a task, update a tag. Build workflows for 2-3 key stage transitions."},
+{day:88,focus:"End-to-end: form, CRM, pipeline, booking, follow-up",artifact:"Complete client operations workflow",detail:"Connect everything: form submission triggers CRM entry and pipeline placement. Welcome email goes out with booking link. After booking, confirmation and reminder sequence. Document the complete flow."},
+{day:89,focus:"Document the entire GHL setup as a case study",artifact:"GHL case study with screenshots",detail:"Write a case study: the problem (manual client management), the solution (your GHL system), the components, how they connect, and the results. Include screenshots. This works as a portfolio piece even after the trial ends."},
+{day:90,focus:"Phase 3 complete. Sprint review. Milestone check.",artifact:"Milestone review + public learning post",detail:"Phase 3 done! Review artifact counts. Check if it's time to enroll in the Technical Virtual Assistants PH course. Write your Phase 3 reflection. You're halfway there."},
+],
+checklist:["Can explain CRM concepts to a non-technical person","Have a working pipeline with stages and contacts","Have created a form connected to your CRM","Have built 3+ automated workflows","Have an end-to-end client operations system","Understand automation logic (if X, then Y)","Have a case study for your portfolio"],
+},
+]},
+{id:4,title:"Automation Builder",days:"Days 91-120",color:"#F59E0B",
+description:"Make different tools work together without manual effort.",
+sprints:[
+{id:7,title:"Connect Your Tools",days:"Days 91-105",
+tools:["Zapier (free tier)","Make (free tier)","Claude"],
+toolCourses:[{name:"Zapier University",type:"Free",note:"Official courses: Zapier 101, Multi-Step Zaps, Paths & Filters"},{name:"Make Academy",type:"Free",note:"Official courses: Make Fundamentals, Scenarios, Routers"},{name:"AI Automation PH YouTube: Zapier & Make",type:"Free",note:"Practical automation tutorials for VAs"},{name:"Technical Virtual Assistants PH Course",type:"Paid",note:"Structured Zapier and Make modules with hands-on projects"}],
+problem:"Your tools are isolated. Gmail doesn't talk to your CRM. Your calendar doesn't trigger prep workflows. Information lives in silos. You need to connect everything.",
+objective:"Learn integration thinking and build practical automations using Zapier and Make that connect your existing tools.",
+skills:["Integration thinking (which tools should connect, how)","Zapier: triggers, actions, multi-step Zaps, filters, paths","Make: scenarios, modules, routers, iterators","When to use Zapier vs Make","Error handling basics","Free tier limitations and working within them"],
+resources:["AI Automation PH YouTube: Zapier and Make tutorials - Free","Zapier University - Free","Make Academy - Free","Technical Virtual Assistants PH course (if enrolled)"],
+useCases:["Auto-adding meeting notes to your CRM after each call","Creating tasks when emails arrive from specific people","Sending weekly digest emails from multiple sources","Automating expense report routing","Syncing calendar events with preparation workflows"],
+exercises:["Map your top 5 most repetitive tasks. For each, identify what triggers them and the ideal automated outcome.","Build a Zapier automation that takes a Google Form response and creates entries in 2 different places.","Build the same automation in Make. Compare the experience."],
+miniProject:{title:"5 Automations Every EA Needs",desc:"Build and document 5 practical automations: email routing, meeting prep trigger, follow-up creation, form-to-CRM, and weekly digest compilation."},
+portfolioProject:{title:"From Manual to Automated: An EA's Integration Journey",desc:"Before/after case study showing 3 workflows you automated, including time saved, tools connected, and lessons learned."},
+mistakes:["Automating tasks that don't happen often enough to justify setup","Not testing with real data","Ignoring error notifications","Over-complicating when a simple 2-step automation would work"],
+tasks:[
+{day:91,focus:"Integration thinking: map data flows between your tools",artifact:"Data flow map of your current tools",detail:"Before building automations, understand what data flows where. Draw a map: Gmail, Calendar, Sheets, CRM, Notion. What data moves between them? What's manual that could be automatic?"},
+{day:92,focus:"Zapier intro: triggers, actions, your first Zap",artifact:"Zap: form submission, sheet notification",detail:"Learn the core concept: trigger (something happens) + action (do something). Build a simple Zap: when a Google Form is submitted, add a row to a Google Sheet and send yourself a notification."},
+{day:93,focus:"Zapier: multi-step Zaps",artifact:"Zap: email, CRM entry, task",detail:"Multi-step Zaps chain multiple actions. Build one: when you receive an email from a specific person, create a CRM contact AND create a task in your task manager."},
+{day:94,focus:"Zapier: filters and paths (conditional logic)",artifact:"Zap with branching logic",detail:"Add intelligence to your Zaps. Filters skip actions when conditions aren't met. Paths create different routes based on conditions: if priority is high, notify immediately; if normal, batch for daily digest."},
+{day:95,focus:"Zapier: formatting data between apps",artifact:"Cheat sheet: \"Zapier Data Formatting\"",detail:"Apps structure data differently. Learn to format, split, combine, and transform data between steps. Create a cheat sheet of the most useful formatting recipes."},
+{day:96,focus:"Make intro: scenarios, modules, first scenario",artifact:"Scenario: form, sheet, email notification",detail:"Make (formerly Integromat) is more visual and powerful than Zapier. Build your first scenario: form submission triggers a Google Sheets entry and email notification. Compare the experience to Zapier."},
+{day:97,focus:"Make: routers and filters (parallel paths)",artifact:"Scenario with routing logic",detail:"Make's router lets you send data down multiple paths simultaneously. Build a scenario that routes data differently based on conditions. This is where Make shines over Zapier."},
+{day:98,focus:"Review: Zapier vs Make comparison",artifact:"Comparison doc: \"Zapier vs Make\"",detail:"After using both, write an honest comparison: ease of use, power, pricing, free tier limits, best use cases for each. Include specific examples from your experience."},
+{day:99,focus:"Build: Automate Executive Communication",artifact:"Automation: email, categorize, route, notify",detail:"Build a real-world automation: incoming emails get categorized, routed to the right person or folder, and you get notified about urgent ones. Use either Zapier or Make."},
+{day:100,focus:"Build: Automate Meeting Prep",artifact:"Automation: calendar, research trigger, brief",detail:"When a meeting appears on your calendar, trigger a prep workflow: send yourself a reminder with attendee names so you can start research. This is the first step toward automated prep."},
+{day:101,focus:"Build: Automate Follow-Up Tracking",artifact:"Automation: meeting, tasks, reminders",detail:"After a meeting, automatically create follow-up tasks with deadlines. Set up reminder notifications for tasks approaching their due date. Connect to your existing tracker."},
+{day:102,focus:"Build: Automate Client Intake",artifact:"Automation: form, CRM, email, booking",detail:"Connect your intake form to your CRM and email: form submission creates a contact, sends a welcome email, and includes a booking link. Test the complete flow end-to-end."},
+{day:103,focus:"Error handling: when automations break",artifact:"SOP: \"Automation Troubleshooting\"",detail:"Automations break. Build an SOP for when they do: how to check error logs, common failure reasons, how to test and fix, and how to set up error notifications so you know quickly."},
+{day:104,focus:"Combining AI with automations",artifact:"AI-enhanced automation template",detail:"Add AI to an automation: use Claude (via API or Zapier integration) to process, categorize, or draft within an automated workflow. Document the pattern so you can reuse it."},
+{day:105,focus:"Sprint review. Document everything.",artifact:"Sprint 7 summary + public learning post",detail:"Review all automations you've built. Update your portfolio with case studies. Check your artifact counts. Share your automation journey publicly."},
+],
+checklist:["Can build multi-step automations in Zapier and Make","Understand triggers, actions, filters, conditional logic","Have 5+ working automations","Know when to use Zapier vs Make","Can troubleshoot failed automations","Have documented business impact of each automation"],
+},
+{id:8,title:"Build Advanced Automations",days:"Days 106-120",
+tools:["n8n (free)","Postman (free)","Make","Claude"],
+toolCourses:[{name:"n8n Academy & Documentation",type:"Free",note:"Official tutorials: Getting Started, Workflow Basics, HTTP Requests"},{name:"Postman Learning Center",type:"Free",note:"API Fundamentals course - essential before touching any API"},{name:"AI Automation PH YouTube: n8n & APIs",type:"Free",note:"Practical n8n workflows and API integration tutorials"},{name:"Technical Virtual Assistants PH Course",type:"Paid",note:"n8n modules with real-world automation projects"}],
+problem:"Basic automations connect two tools. Advanced automations handle complexity: API calls, data transformation, error recovery, and AI-enhanced processing. This is what separates tool users from system builders.",
+objective:"Understand APIs, learn n8n, and build complex automations that handle real-world business logic.",
+skills:["API fundamentals (requests, responses, authentication)","REST concepts (GET, POST, PUT, DELETE)","Webhooks (receiving real-time data)","Working with JSON data","n8n: nodes, workflows, expressions, HTTP requests","When to use n8n vs Zapier vs Make"],
+resources:["AI Automation PH YouTube: n8n and API tutorials - Free","Postman Learning Center - Free","n8n documentation and community tutorials - Free","Technical Virtual Assistants PH course (if enrolled)"],
+useCases:["Pulling data from tools without native integrations","Building custom integrations between any two services","Creating webhook endpoints for real-time data processing","Building automations with complex data transformation"],
+exercises:["Use Postman to call a free public API (weather, news). Read the response and identify useful data.","Build an n8n workflow triggered by a webhook that processes incoming data.","Create an automation that calls an API, transforms the data, and stores it in Google Sheets."],
+miniProject:{title:"API-Powered Daily Brief",desc:"An n8n or Make workflow that calls 2-3 APIs (news, weather, calendar), processes the results, and emails a formatted daily briefing."},
+portfolioProject:{title:"Custom Integration Builder",desc:"Document how you connected two tools without a native integration, using APIs and n8n/Make. Show the problem, research, solution architecture, and working workflow."},
+mistakes:["Being intimidated by APIs (they're just structured requests)","Jumping to n8n before understanding automation basics","Hardcoding API keys in shareable workflows","Not reading API documentation carefully"],
+tasks:[
+{day:106,course:{name:"Building with Claude API (Part 1)",duration:"2 hrs",type:"anthropic"},focus:"APIs explained: what they are, why they matter",artifact:"Cheat sheet: \"APIs for Non-Developers\"",detail:"APIs let software talk to other software. Think of it like a restaurant: you (the client) send an order (request) to the kitchen (server), and you get food back (response). Write this explanation in your own words."},
+{day:107,course:{name:"Building with Claude API (Part 2)",duration:"2 hrs",type:"anthropic"},focus:"API basics: requests, responses, status codes",artifact:"Documentation: \"API Vocabulary Guide\"",detail:"Learn the vocabulary: endpoint (URL), method (GET/POST), headers (metadata), body (data), status codes (200=success, 404=not found, 401=unauthorized). Create a reference guide."},
+{day:108,course:{name:"Building with Claude API (Part 3)",duration:"2 hrs",type:"anthropic"},focus:"Making API calls with Postman",artifact:"3+ successful API calls documented",detail:"Download Postman (free). Make your first API call to a free public API (try OpenWeatherMap, NewsAPI, or JSONPlaceholder). Document each call: what you sent, what you got back."},
+{day:109,course:{name:"Building with Claude API (Part 4)",duration:"2 hrs",type:"anthropic"},focus:"Authentication: API keys, OAuth basics",artifact:"Notes: \"API Authentication Methods\"",detail:"Most APIs require authentication. Learn about API keys (simple), OAuth (complex but common), and bearer tokens. Document the differences and when each is used."},
+{day:110,focus:"Working with JSON: reading structured data",artifact:"Cheat sheet: \"Reading JSON Data\"",detail:"JSON is how APIs send data. Learn to read it: objects (curly braces), arrays (square brackets), key-value pairs, nested structures. Create a cheat sheet with examples from real API responses."},
+{day:111,focus:"Webhooks: receiving data in real-time",artifact:"Webhook test: receive and process data",detail:"Webhooks are the opposite of API calls: instead of you asking for data, data is sent TO you when something happens. Set up a test webhook endpoint and trigger it."},
+{day:112,course:{name:"Introduction to MCP",duration:"1.5-2 hrs",type:"anthropic"},focus:"Review day. Practice more API calls.",artifact:"API practice log with 5+ calls",detail:"Make 5+ different API calls. Try different methods (GET, POST). Try different APIs. Get comfortable with the request/response pattern. Document everything in your practice log."},
+{day:113,focus:"n8n intro: interface, nodes, first workflow",artifact:"n8n workflow: webhook, process, email",detail:"Set up n8n (cloud free tier or self-hosted). Build your first workflow: a webhook receives data, you process it (format, filter), and send an email with the results."},
+{day:114,focus:"n8n: HTTP Request node (calling APIs)",artifact:"n8n workflow with external API call",detail:"Use n8n's HTTP Request node to call an external API. Process the response and do something useful with the data (store it, send it, display it)."},
+{day:115,focus:"n8n: conditional logic and branching",artifact:"n8n workflow with IF/switch nodes",detail:"Add decision-making to your n8n workflows. Use IF nodes to branch based on conditions. Use Switch nodes for multiple paths. Build a workflow that handles different scenarios."},
+{day:116,focus:"n8n: data transformation (merge, split, reshape)",artifact:"n8n workflow with data processing",detail:"Learn n8n's data transformation nodes: merge data from multiple sources, split arrays into individual items, reshape data structures. Build a workflow that combines data from 2 sources."},
+{day:117,focus:"n8n: error handling and retry logic",artifact:"n8n workflow with error handling",detail:"Add error handling to your workflows: try/catch patterns, retry on failure, error notifications. A production workflow needs to handle failures gracefully."},
+{day:118,course:{name:"MCP: Advanced Topics",duration:"1.5 hrs",type:"anthropic"},focus:"Advanced Make: API calls within scenarios",artifact:"Make scenario with HTTP module",detail:"Use Make's HTTP module to call APIs within a scenario. Compare the experience to n8n. Some tasks are easier in one tool vs the other."},
+{day:119,focus:"Build: complex automation for a real business problem",artifact:"End-to-end automation with API + logic + AI",detail:"Bring everything together: build an automation that calls an API, processes the data with conditional logic, optionally uses AI for analysis, and delivers a useful output."},
+{day:120,focus:"Phase 4 complete. Sprint review. Milestone check.",artifact:"Milestone review + public learning post",detail:"Phase 4 done! You can now connect any tools together. Review your skills, update your portfolio, and write your Phase 4 reflection."},
+],
+checklist:["Can explain what an API is to a non-technical colleague","Can make API calls and read JSON responses","Have built 3+ n8n workflows","Understand webhooks and when to use them","Can troubleshoot API errors","Know when to choose Zapier vs Make vs n8n"],
+},
+]},
+{id:5,title:"AI Systems",days:"Days 121-150",color:"#10B981",
+description:"Build intelligent systems that think, not just automate.",
+sprints:[
+{id:9,title:"Build AI Agents & Intelligent Workflows",days:"Days 121-135",
+tools:["Claude","n8n or Make","Your automation stack"],
+problem:"Your automations run on rules: if X, then Y. AI agents run on judgment: read this, figure out what's important, and take the right action. That's the future of EA work.",
+objective:"Design and build AI agents that can handle multi-step tasks with judgment, including guardrails and human-in-the-loop approval patterns.",
+skills:["What AI agents are and how they differ from automations","Agent design: plan, execute, review, adjust","Human-in-the-loop patterns","Agent guardrails (preventing errors)","Multi-step autonomous workflows","Combining AI with automation platforms"],
+resources:["AI Automation PH YouTube: AI agent content - Free","Anthropic documentation: tool use, function calling - Free","n8n documentation: AI nodes and workflows - Free","Technical Virtual Assistants PH course (if enrolled)"],
+useCases:["An agent that categorizes 50 emails and tells you what's urgent","An agent that preps you for all tomorrow's meetings automatically","An agent that monitors industry news and flags what matters","An agent that generates weekly reports from multiple sources"],
+exercises:["Design an agent workflow on paper: inputs, decision points, actions, approval gates, outputs.","Build a simple agent in n8n that takes input, uses AI to decide, and takes different actions.","Create a human-in-the-loop workflow: agent drafts, waits for approval, then acts."],
+miniProject:{title:"Email Triage Agent",desc:"An AI workflow that reads emails, categorizes them (urgent / action needed / FYI / delegate / archive), drafts responses for routine ones, and sends you a summary."},
+portfolioProject:{title:"Building Your First AI Agent: A Practical Guide",desc:"Tutorial-style case study showing how to design, build, test, and deploy an AI agent for EA work. Include concept, tools, workflow, test results, and honest lessons learned."},
+mistakes:["Making agents too autonomous too early (start with human-in-the-loop)","Not defining clear success criteria","Skipping guardrails (agents will hallucinate)","Building agents for rare tasks (not worth the setup)"],
+tasks:[
+{day:121,course:{name:"Introduction to Agent Skills",duration:"1 hr",type:"anthropic"},focus:"What are AI agents? How do they differ from automations?",artifact:"Cheat sheet: \"Automations vs AI Agents\"",detail:"Automations follow rules: IF email from boss THEN star it. Agents use judgment: read this email, decide if it's urgent based on content, and take appropriate action. Document the key differences."},
+{day:122,focus:"Agent design patterns: when to use agents vs rules",artifact:"Decision framework: \"Agent or Automation?\"",detail:"Not everything needs an agent. Build a decision framework: use automation when the logic is clear and consistent. Use agents when judgment is needed or situations vary. Include examples."},
+{day:123,focus:"Simple agent concept: Claude with structured instructions",artifact:"Agent design doc: \"Research Agent\"",detail:"Design (on paper) an agent that takes a research question, breaks it into sub-questions, researches each, synthesizes findings, and produces a brief. Don't build yet, just design."},
+{day:124,focus:"Agent workflows: plan, execute, review",artifact:"Workflow template: \"Agent Task Loop\"",detail:"The core agent pattern: 1) Receive task, 2) Plan approach, 3) Execute steps, 4) Review output quality, 5) Adjust if needed, 6) Deliver result. Create a reusable template for this pattern."},
+{day:125,focus:"Human-in-the-loop: when agents should pause and ask",artifact:"SOP: \"Designing Human Approval Points\"",detail:"Agents shouldn't do everything autonomously. Define when an agent should pause: before sending external communications, when confidence is low, when the action is irreversible, when money is involved."},
+{day:126,focus:"Agent guardrails: preventing mistakes",artifact:"Checklist: \"AI Agent Quality Controls\"",detail:"Build a checklist of guardrails: output validation, confidence thresholds, fallback behaviors, error logging, human escalation triggers, and testing protocols."},
+{day:127,course:{name:"Claude Code: Subagents",duration:"1 hr",type:"anthropic"},focus:"Review day. Test agent concepts with real scenarios.",artifact:"Tested agent designs + refinements",detail:"Take your agent designs and test them mentally with 5 real scenarios. Would the agent handle them correctly? Where would it fail? What guardrails are missing? Refine your designs."},
+{day:128,focus:"Build: Email Triage Agent",artifact:"Agent: read, categorize, draft, flag",detail:"Build an agent workflow that reads emails (or simulated emails), categorizes them by urgency and type, drafts responses for routine ones, and flags urgent items for your attention."},
+{day:129,focus:"Build: Meeting Prep Agent",artifact:"Agent: detect meeting, research, brief",detail:"Build an agent that detects upcoming meetings, researches attendees and topics, and generates a prep brief. Include a human-in-the-loop step where you review before the brief is finalized."},
+{day:130,focus:"Build: Research & Briefing Agent",artifact:"Agent: topic, gather, synthesize, format",detail:"Build an agent that takes a research question, gathers information from multiple sources, synthesizes findings, and formats them as an executive briefing."},
+{day:131,focus:"Build: Priority Monitoring Agent",artifact:"Agent: scan sources, filter, alert",detail:"Build an agent that monitors specific sources (news feeds, social media, industry reports) and alerts you when something relevant to your executive's priorities appears."},
+{day:132,focus:"Agent testing: running scenarios and checking quality",artifact:"Test results + quality metrics",detail:"Run each agent through 5+ test scenarios. Track: accuracy, response time, false positives, false negatives. Document what works and what doesn't."},
+{day:133,focus:"Combining agents with existing automations",artifact:"Integration plan",detail:"Map how your agents can connect to your existing automation stack. Which agents feed into which automations? Where do they complement each other?"},
+{day:134,focus:"Document agent design decisions and lessons learned",artifact:"Agent design case study",detail:"Write a case study about your agent-building experience: what you designed, what worked, what failed, what you'd do differently. This is valuable portfolio content."},
+{day:135,focus:"Sprint review. Document everything.",artifact:"Sprint 9 summary + public learning post",detail:"Review Sprint 9. AI agents are a fast-moving field, so focus on the concepts you've learned, not just the specific tools. Update your portfolio and share your progress."},
+],
+checklist:["Can explain AI agents vs automations","Have designed and built 3+ agent workflows","Understand human-in-the-loop patterns","Have implemented guardrails and quality checks","Can connect agents to automation platforms","Have documented agent design decisions"],
+},
+{id:10,title:"Executive Dashboards & Knowledge Systems",days:"Days 136-150",
+tools:["Google Sheets","Notion (free)","Claude","Your automation stack"],
+problem:"Executives need two things: visibility (what's happening right now?) and access (where's that information?). Dashboards provide visibility. Knowledge systems provide access. Building both makes you indispensable.",
+objective:"Build executive dashboards with live data feeds and a comprehensive knowledge management system that makes information findable.",
+skills:["Dashboard design (what to show, what to hide)","Data visualization basics","Google Sheets charting and conditional formatting","Knowledge management system design","Notion databases, views, and relations","Information architecture","Automated data feeds"],
+resources:["Google Workspace Learning Center: Sheets charting - Free","Notion official tutorials and templates - Free","YouTube: dashboard design and knowledge management - Free"],
+useCases:["Project status dashboards an executive can scan in 10 seconds","Knowledge bases that surface the right SOP instantly","Onboarding guides for new team members","Centralized template libraries","Auto-updating dashboards with live data"],
+exercises:["Build a dashboard with 5 key metrics. Show it to someone and ask if they can tell the status in under 10 seconds.","Create a Notion knowledge base and test: can you find any SOP in under 30 seconds?","Design an information architecture for a hypothetical 10-person team."],
+miniProject:{title:"EA Operations Hub",desc:"A Notion workspace linking everything: SOP Library, Template Library, Project Tracker, Contact Directory, Meeting Notes Archive, Learning Database. One page to start your workday."},
+portfolioProject:{title:"Executive Dashboard & Knowledge Management System",desc:"A complete case study combining a live dashboard with a structured knowledge base. Show how they connect, how they're maintained, and how they help executives make faster decisions."},
+mistakes:["Putting too much on a dashboard (if everything is highlighted, nothing is)","Building without a maintenance plan (knowledge bases decay in weeks)","Making things look polished before making them functional","Not considering who else uses the system"],
+tasks:[
+{day:136,focus:"Dashboard design principles: what makes one useful",artifact:"Cheat sheet: \"Dashboard Design Rules\"",detail:"Good dashboards are glanceable, actionable, and current. They show the minimum information needed to make decisions. Document the rules you'll follow."},
+{day:137,focus:"Executive dashboard requirements",artifact:"Template: \"Executive Dashboard Requirements\"",detail:"What does an executive need to see? Project status, key metrics, upcoming deadlines, items needing attention, team capacity. Create a requirements template that works for any executive."},
+{day:138,focus:"Build: Project Status Dashboard (Google Sheets)",artifact:"Working dashboard with charts",detail:"Build a dashboard in Google Sheets with: project list, status indicators, progress bars (using SPARKLINE or charts), and a summary section. Use real or realistic data."},
+{day:139,focus:"Enhance with conditional formatting and visuals",artifact:"Enhanced dashboard",detail:"Add conditional formatting: red/yellow/green status indicators, overdue highlighting, progress visualization. Make the dashboard scannable at a glance without reading any text."},
+{day:140,focus:"Connect automated data feeds to dashboard",artifact:"Dashboard with live data",detail:"Connect your dashboard to data sources: Google Forms for input, IMPORTRANGE for cross-sheet data, or automation tools for external data. The dashboard should update without manual work."},
+{day:141,focus:"Notion intro: pages, databases, views",artifact:"Notion workspace setup",detail:"Set up your Notion workspace: create your first database (with properties, views, filters), build linked pages, and understand relations between databases."},
+{day:142,focus:"Review day. Refine dashboards, explore Notion.",artifact:"Improved dashboards",detail:"Refine your Google Sheets dashboard based on testing. Explore more Notion features: templates, rollups, formulas. Start planning your knowledge base structure."},
+{day:143,focus:"Build: Knowledge Base in Notion",artifact:"Knowledge Base v1 with 3 sections",detail:"Create a knowledge base with three sections: People (contacts, org chart), Processes (SOPs, workflows), Projects (status, history). Add 5+ entries to each section."},
+{day:144,focus:"Build: SOP Library in Notion (migrate earlier work)",artifact:"Centralized SOP Library",detail:"Migrate all your SOPs from earlier sprints into Notion. Add tags, categories, and a search-friendly structure. This should be your go-to place for any process documentation."},
+{day:145,focus:"Build: Template Library (all templates organized)",artifact:"Template Library with 25+ entries",detail:"Organize every template you've created: email templates, document templates, meeting templates, planning templates. Tag by category and use case."},
+{day:146,focus:"Build: EA Operations Hub (central starting point)",artifact:"Operations Hub linking all systems",detail:"Create a single Notion page that links to everything: dashboards, knowledge base, SOP library, template library, project tracker, and daily tools. This is your daily command center."},
+{day:147,focus:"Connect knowledge base with AI",artifact:"AI-enhanced knowledge retrieval workflow",detail:"Build a workflow where you can ask Claude questions about your knowledge base. Upload key documents to a Claude Project or create prompts that reference your organized information."},
+{day:148,focus:"Build: Team Wiki or Onboarding Guide",artifact:"Wiki: \"New EA Onboarding Guide\"",detail:"Create a guide that would help a new EA get up to speed: tools they need, processes to follow, key contacts, important documents, common tasks, and where to find help."},
+{day:149,focus:"Automate dashboard and knowledge base updates",artifact:"Automated refresh workflows",detail:"Set up automations that keep your systems current: scheduled data refreshes for dashboards, reminders to review and update knowledge base entries, alerts when information is stale."},
+{day:150,focus:"Phase 5 complete. Sprint review. Milestone check.",artifact:"Milestone review + public learning post",detail:"Phase 5 done! You now have intelligent systems: AI agents, dashboards, and knowledge management. Review your progress, update your portfolio, and plan for the final phase."},
+],
+checklist:["Have 2+ working dashboards with real data","Knowledge management system is organized and searchable","SOP and Template libraries are centralized","EA Operations Hub connects everything","At least one dashboard has automated data feeds","Could hand the system to another EA"],
+},
+]},
+{id:6,title:"Professional Portfolio",days:"Days 151-180",color:"#EF4444",
+description:"Turn 150 days of building into career opportunities.",
+sprints:[
+{id:11,title:"Capstone Projects",days:"Days 151-165",
+tools:["Everything you've learned"],
+problem:"You have dozens of small projects. Now you need 2-3 big ones that demonstrate end-to-end problem-solving. These are the projects people remember.",
+objective:"Build 2-3 portfolio-quality capstone projects that showcase your full range of skills, then document each as a complete case study.",
+skills:["System architecture and design","End-to-end project execution","Case study writing","Quality assurance and testing","Project documentation"],
+resources:["Your complete roadmap journey as reference","Portfolio examples from other professionals - Free","Case study writing guides on YouTube - Free"],
+useCases:["Full Executive Support System (Claude + Google + automations)","Client Onboarding Automation (CRM + forms + email sequences)","AI Research and Briefing Engine (APIs + AI + scheduling)","Executive Dashboard Suite (data viz + automated updates)","EA Knowledge Hub (Notion + AI search + onboarding guide)"],
+exercises:["Scope your capstone projects: what problem does each solve, who is the user, what tools are involved?","Test each capstone with a realistic scenario. Document what works and what breaks.","Get feedback from at least one person and incorporate it into your final version."],
+miniProject:{title:"Capstone Testing Suite",desc:"A set of test scenarios for each capstone project: normal case, edge case, failure case. Run all tests and document results."},
+portfolioProject:{title:"Your 2-3 Capstone Projects",desc:"Each capstone should have: problem statement, solution architecture, tools used, implementation walkthrough, test results, lessons learned, and screenshots."},
+mistakes:["Rushing to finish instead of making it portfolio-quality","Not going back to improve early work","Skipping the feedback step","Treating Day 165 as done instead of iterating"],
+tasks:[
+{day:151,focus:"Capstone planning: choose 2-3 projects, define scope",artifact:"Project scoping documents",detail:"Choose your strongest 2-3 project ideas. For each: define the problem, the user, the tools involved, the expected outcome, and what makes it portfolio-worthy."},
+{day:152,focus:"Capstone 1: Design the system architecture",artifact:"System design + workflow diagram",detail:"Map out the complete system: what connects to what, what triggers what, where data flows. Draw a diagram. This is your blueprint before building."},
+{day:153,focus:"Capstone 1: Build core functionality",artifact:"Working prototype",detail:"Build the minimum viable version. Don't worry about polish yet. Focus on: does the core flow work end-to-end? Can you demonstrate the value?"},
+{day:154,focus:"Capstone 1: Add secondary features and polish",artifact:"Enhanced system",detail:"Add the features that make it complete: error handling, edge cases, better formatting, user-friendly documentation. Make it feel professional."},
+{day:155,focus:"Capstone 1: Test with realistic scenarios",artifact:"Tested and refined system",detail:"Run 5+ realistic test scenarios through your system. Include normal cases, edge cases, and failure cases. Fix everything that breaks. Document test results."},
+{day:156,focus:"Capstone 1: Write the case study",artifact:"Case study (problem, solution, results)",detail:"Write a professional case study: The Problem (what business challenge this solves), The Solution (what you built and how), The Results (time saved, quality improved, capabilities gained)."},
+{day:157,focus:"Capstone 2: Design the system architecture",artifact:"System design + workflow diagram",detail:"Same process for your second capstone. Different problem, different tools, different approach. This demonstrates range in your portfolio."},
+{day:158,focus:"Capstone 2: Build core functionality",artifact:"Working prototype",detail:"Build the core flow. Test early. Don't repeat mistakes from Capstone 1."},
+{day:159,focus:"Capstone 2: Add secondary features and polish",artifact:"Enhanced system",detail:"Polish and complete. Focus on what makes this project different from Capstone 1."},
+{day:160,focus:"Capstone 2: Test with realistic scenarios",artifact:"Tested and refined system",detail:"Test thoroughly. Document results. Fix issues. This is portfolio-quality work."},
+{day:161,focus:"Capstone 2: Write the case study",artifact:"Complete case study",detail:"Write the case study. Different format or emphasis from Capstone 1 to show versatility."},
+{day:162,focus:"Capstone 3 (optional) or improve existing project",artifact:"Third capstone or enhanced project",detail:"Either start a third capstone or significantly improve one of your first two based on testing. Quality over quantity."},
+{day:163,focus:"Capstone 3: complete and document",artifact:"Case study or enhanced documentation",detail:"Complete and document your third project or enhanced version."},
+{day:164,focus:"Review all capstones. Get feedback.",artifact:"Feedback notes + revision plan",detail:"Share your capstones with someone: a colleague, a mentor, or an online community. Ask for honest feedback. Note everything they say."},
+{day:165,focus:"Final capstone polish based on feedback",artifact:"Finalized capstone projects",detail:"Incorporate the feedback. Fix issues. Polish presentations. Your capstones should be ready to show anyone."},
+],
+checklist:["Have 2-3 portfolio-quality capstone projects","Each capstone has a complete case study","Projects demonstrate different skill sets","Have received feedback and incorporated it","Would feel confident presenting in an interview"],
+},
+{id:12,title:"Career Sprint",days:"Days 166-180",
+tools:["Claude","LinkedIn","Your portfolio platform"],
+problem:"Skills without packaging are invisible. You need career assets that make your 180 days of work visible, credible, and shareable to open doors.",
+objective:"Build a complete set of career assets: portfolio, resume, LinkedIn profile, interview stories, and a shareable resource for the EA community.",
+skills:["Portfolio curation and presentation","Resume writing for AI-powered EA roles","LinkedIn optimization","Interview storytelling (STAR method)","Personal branding","Community contribution"],
+resources:["LinkedIn profile optimization guides - Free","STAR interview method guides - Free","Portfolio examples from other professionals - Free"],
+useCases:["Applying for AI-powered EA roles","Pitching automation services to clients","Building authority in the EA community","Creating digital products from your knowledge","Speaking at virtual events about AI for EAs"],
+exercises:["Write your resume as if applying for an \"AI-Powered Executive Assistant\" role. Match your skills to the imagined job description.","Practice explaining your best capstone in 2 minutes to someone non-technical, then in 2 minutes to someone technical.","Search LinkedIn for EA roles mentioning AI. Map your skills to their requirements."],
+miniProject:{title:"Interview Prep Kit",desc:"5 STAR stories from your roadmap journey, 15+ Q&As about AI for EAs, and a 2-minute pitch for your capstone projects."},
+portfolioProject:{title:"Your Complete Professional Portfolio",desc:"This IS the project. Every case study, skill demonstration, and artifact organized and presented professionally. This is what you share with the world."},
+mistakes:["Making the portfolio too long (curate your best 10, not all 150+)","Listing tools instead of outcomes on your resume","Skipping interview prep","Not posting the final reflection"],
+tasks:[
+{day:166,focus:"Portfolio: catalog all 150+ artifacts by category",artifact:"Master artifact inventory",detail:"Go through every sprint and list every artifact you created. Categorize them. Identify your top 10 strongest pieces. This inventory becomes the source for your portfolio."},
+{day:167,focus:"Portfolio: decide format and platform",artifact:"Portfolio outline",detail:"Choose your portfolio platform: Notion (free, easy), a simple website, or a PDF. Outline the sections: About Me, Projects, Case Studies, Skills, Resources. Keep it scannable."},
+{day:168,focus:"Portfolio: write your \"About Me\" and professional story",artifact:"Professional bio and journey narrative",detail:"Write your story: who you are, why you started this journey, what you've built, and where you're heading. Make it personal and specific, not generic."},
+{day:169,focus:"Portfolio: curate top 10 projects with descriptions",artifact:"Portfolio project showcase",detail:"Write a compelling description for each of your top 10 projects: what problem it solves, what tools you used, what you learned, and why it matters."},
+{day:170,focus:"Portfolio: add case studies and screenshots",artifact:"Visual portfolio with evidence",detail:"Add screenshots, workflow diagrams, and before/after examples. Visual evidence makes your portfolio 10x more credible than descriptions alone."},
+{day:171,focus:"Portfolio: create your AI Skills Matrix",artifact:"Skills matrix with competencies and evidence",detail:"Create a visual matrix: skill categories on one axis, proficiency levels on the other. Link each skill to a specific project that demonstrates it. This is your at-a-glance capability summary."},
+{day:172,course:{name:"AI Fluency for Educators + Students",duration:"1.5 hrs",type:"anthropic"},focus:"Resume: rewrite with AI-powered EA positioning",artifact:"Updated resume",detail:"Rewrite your resume to position yourself as an AI-powered EA. Focus on outcomes (\"reduced email processing time by 60%\") not tools (\"knows Zapier\"). Use your artifact counts as evidence."},
+{day:173,focus:"LinkedIn: headline, summary, featured section",artifact:"Updated LinkedIn profile",detail:"Update your LinkedIn: headline (include \"AI-Powered EA\" or similar), summary (your journey and capabilities), featured section (link to portfolio and best posts). Make it work for you passively."},
+{day:174,course:{name:"Teaching AI Fluency",duration:"1 hr",type:"anthropic"},focus:"LinkedIn: write \"What I Learned in 180 Days\" post",artifact:"Long-form LinkedIn post",detail:"Write the definitive post about your journey. What you learned, what surprised you, what you'd do differently, and what's next. This is your most important public learning post."},
+{day:175,focus:"Interview prep: turn each capstone into a STAR story",artifact:"5 STAR interview stories",detail:"For each capstone and key project: Situation (what was the context), Task (what needed to be done), Action (what you did specifically), Result (what happened). Practice telling each in under 2 minutes."},
+{day:176,focus:"Interview prep: common AI-for-EA questions",artifact:"Interview prep document with 15+ Q&As",detail:"Prepare answers for: How do you use AI in your work? What automations have you built? How do you decide what to automate? What's your approach to learning new tools? Give me an example of a system you built."},
+{day:177,course:{name:"AI Fluency for Nonprofits",duration:"0.5-1 hr",type:"anthropic"},focus:"Create a shareable resource for other EAs",artifact:"Template pack, guide, or toolkit",detail:"Give back to the community: create a starter kit that other EAs can use. Could be a prompt library, an automation template pack, or a \"Getting Started with AI\" guide."},
+{day:178,course:{name:"AI Fluency for pK-12 Educators",duration:"1.5 hrs",type:"anthropic"},focus:"Future planning: goals for the next 6 months",artifact:"Personal roadmap v2",detail:"What's next? Deepen skills? Take the Tech VA course? Freelance? Create digital products? Build a community? Write your next 6-month plan with specific goals and milestones."},
+{day:179,focus:"Final portfolio review and polish",artifact:"Complete, polished portfolio",detail:"Final review: read everything in your portfolio as if you're seeing it for the first time. Fix typos, improve descriptions, update screenshots. Make it something you're genuinely proud of."},
+{day:180,focus:"Celebrate. You did it. Post your story.",artifact:"Final reflection + celebration post",detail:"You completed a 180-day roadmap. That's extraordinary. Celebrate this. Post your final reflection. Thank the people who supported you. And then keep building, because this is just the beginning."},
+],
+checklist:["Portfolio is complete, polished, and shareable","Resume positions you as an AI-powered EA","LinkedIn is updated with featured projects","Have 5 STAR stories ready for interviews","Have created a shareable resource for other EAs","Have a clear plan for what's next","Feel confident calling yourself an AI-Powered EA"],
+},
+]},
+];
+
+const ARTIFACT_CATS=[
+{key:"prompts",label:"Prompts",target:50,icon:"\u{1F4AC}"},
+{key:"sops",label:"SOPs",target:20,icon:"\u{1F4CB}"},
+{key:"workspaces",label:"AI Workspaces",target:10,icon:"\u{1F9E0}"},
+{key:"automations",label:"Automations",target:20,icon:"\u26A1"},
+{key:"dashboards",label:"Dashboards",target:5,icon:"\u{1F4CA}"},
+{key:"caseStudies",label:"Case Studies",target:10,icon:"\u{1F4D6}"},
+{key:"templates",label:"Templates",target:30,icon:"\u{1F4C4}"},
+{key:"portfolioProjects",label:"Portfolio Projects",target:10,icon:"\u{1F3C6}"},
+];
+
+
+const ALL_COURSES=[
+{id:1,name:"Claude 101",day:1,duration:"2-3 hrs",type:"anthropic",phase:1,sprint:1,desc:"Foundation course. How Claude works, interface tour, core capabilities and limitations."},
+{id:2,name:"Claude Platform 101",day:2,duration:"1 hr",type:"anthropic",phase:1,sprint:1,desc:"Full platform features: Projects, conversations, settings, and workspace management."},
+{id:3,name:"AI Fluency: Framework & Foundations",day:7,duration:"1 hr",type:"anthropic",phase:1,sprint:1,desc:"Conceptual framework for AI thinking. Take after a week of hands-on practice for deeper understanding."},
+{id:4,name:"AI Capabilities and Limitations",day:13,duration:"1 hr",type:"anthropic",phase:1,sprint:1,desc:"Where AI excels and where it fails. Prevents over-reliance and under-use."},
+{id:5,name:"Introduction to Claude Cowork",day:31,duration:"1-1.5 hrs",type:"anthropic",phase:2,sprint:3,desc:"Working alongside Claude on complex tasks: drafting, editing, research, and document work."},
+{id:6,name:"AI Fluency for Builders + Small Businesses",day:52,duration:"1.5 hrs",type:"anthropic",phase:2,sprint:4,desc:"How builders use AI practically. Gives new ideas for your meeting and research systems."},
+{id:7,name:"Claude Code 101",day:67,duration:"1-1.5 hrs",type:"anthropic",phase:3,sprint:5,desc:"Build tools, scripts, and utilities with Claude Code. Needs Pro/Max plan or API key for hands-on."},
+{id:8,name:"Claude Code in Action",day:82,duration:"1.5-2 hrs",type:"anthropic",phase:3,sprint:6,desc:"Real-world Claude Code applications. Seeds ideas for automation projects in Phase 4."},
+{id:9,name:"Building with Claude API (Part 1)",day:106,duration:"2 hrs",type:"anthropic",phase:4,sprint:8,desc:"API fundamentals and basic calls. Paired with your API learning sprint."},
+{id:10,name:"Building with Claude API (Part 2)",day:107,duration:"2 hrs",type:"anthropic",phase:4,sprint:8,desc:"API continued: requests, responses, parameters. Hands-on with Postman."},
+{id:11,name:"Building with Claude API (Part 3)",day:108,duration:"2 hrs",type:"anthropic",phase:4,sprint:8,desc:"Advanced API: tool use, streaming, structured outputs."},
+{id:12,name:"Building with Claude API (Part 4)",day:109,duration:"2 hrs",type:"anthropic",phase:4,sprint:8,desc:"API mastery: complex integrations, error handling, production patterns."},
+{id:13,name:"Introduction to MCP",day:112,duration:"1.5-2 hrs",type:"anthropic",phase:4,sprint:8,desc:"Model Context Protocol - how Claude connects to external tools and data sources."},
+{id:14,name:"MCP: Advanced Topics",day:118,duration:"1.5 hrs",type:"anthropic",phase:4,sprint:8,desc:"Advanced MCP patterns. Compare with Zapier, Make, and n8n approaches."},
+{id:15,name:"Introduction to Agent Skills",day:121,duration:"1 hr",type:"anthropic",phase:5,sprint:9,desc:"Official Anthropic framework for AI agents. Foundation for your agent-building sprint."},
+{id:16,name:"Claude Code: Subagents",day:127,duration:"1 hr",type:"anthropic",phase:5,sprint:9,desc:"Agents that delegate to other agents. Advanced architecture for complex workflows."},
+{id:17,name:"AI Fluency for Educators + Students",day:172,duration:"1.5 hrs",type:"anthropic",phase:6,sprint:12,desc:"How to explain AI to learners. Essential for educational content creation."},
+{id:18,name:"Teaching AI Fluency",day:174,duration:"1 hr",type:"anthropic",phase:6,sprint:12,desc:"Framework for teaching AI to others. Apply to your long-form LinkedIn post."},
+{id:19,name:"AI Fluency for Nonprofits",day:177,duration:"0.5-1 hr",type:"anthropic",phase:6,sprint:12,desc:"Making AI accessible to resource-constrained organizations. Informs your shareable resource."},
+{id:20,name:"AI Fluency for pK-12 Educators",day:178,duration:"1.5 hrs",type:"anthropic",phase:6,sprint:12,desc:"Teaching AI from scratch. Shapes your educational content strategy."},
+{id:21,name:"Claude with Amazon Bedrock",day:0,duration:"1-1.5 hrs",type:"anthropic",phase:0,sprint:0,desc:"Enterprise AI deployment on AWS. Take anytime during Phase 4-5 or after Day 180."},
+{id:22,name:"Claude on Google Cloud",day:0,duration:"1-1.5 hrs",type:"anthropic",phase:0,sprint:0,desc:"Google Cloud AI integration. Useful given your Google Workspace focus. Take anytime."},
+{id:23,name:"GoHighLevel Official Tutorials",day:77,duration:"Ongoing",type:"tool",phase:3,sprint:6,desc:"Official GHL platform tutorials. Start on Day 77 when you begin your free trial."},
+{id:24,name:"AI Automation PH YouTube: GHL Series",day:76,duration:"Ongoing",type:"tool",phase:3,sprint:6,desc:"Kuya RJ's practical GHL setup and automation videos. Watch alongside Sprint 6."},
+{id:25,name:"Zapier University",day:91,duration:"2-3 hrs",type:"tool",phase:4,sprint:7,desc:"Official Zapier courses. Take Zapier 101, Multi-Step Zaps, and Paths & Filters."},
+{id:26,name:"Make Academy",day:96,duration:"2-3 hrs",type:"tool",phase:4,sprint:7,desc:"Official Make courses. Take Make Fundamentals and Scenarios modules."},
+{id:27,name:"AI Automation PH YouTube: Zapier & Make",day:91,duration:"Ongoing",type:"tool",phase:4,sprint:7,desc:"Practical automation tutorials. Watch relevant videos as you build."},
+{id:28,name:"n8n Academy & Documentation",day:113,duration:"2-3 hrs",type:"tool",phase:4,sprint:8,desc:"Official n8n tutorials. Getting Started, Workflow Basics, HTTP Requests."},
+{id:29,name:"Postman Learning Center",day:108,duration:"1-2 hrs",type:"tool",phase:4,sprint:8,desc:"API Fundamentals course. Essential foundation before making API calls."},
+{id:30,name:"Technical Virtual Assistants PH Course",day:90,duration:"Self-paced",type:"paid",phase:3,sprint:6,desc:"Kuya RJ's full course (\u20B14,699): GHL, Zapier, Make, n8n, Lovable. Enroll at Day 90 decision point."},
+];
+const RES_CATEGORIES=["Courses","YouTube Videos","Articles","Tools","Templates","Notes","Folders","Other"];
+
+
+
+/* ── palette per phase (mapped to Kate palette) ── */
+const PHASE_COLORS={1:"#6E7F66",2:"#8B7FA3",3:"#C98A6B",4:"#7E93A8",5:"#A8886E",6:"#6E7F66"};
+const PHASE_WASH={1:"#EEF1EA",2:"#F1EEF5",3:"#F6EDE7",4:"#EAF0F4",5:"#F4EEE7",6:"#EEF1EA"};
+const PHASE_ICONS={1:"🌱",2:"✉️",3:"🧭",4:"⚡",5:"🤖",6:"🏆"};
+
+const css=`
+nav{position:sticky;top:0;z-index:50;background:rgba(250,247,242,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px;gap:16px}
+.logo{font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem;color:var(--ink);background:none;border:none;padding:0}
+.logo span{color:var(--sage-deep)}
+.nav-links{display:flex;gap:6px;list-style:none;flex-wrap:wrap}
+.nav-links button{background:none;border:none;color:var(--ink-soft);font-size:.86rem;font-weight:500;padding:7px 12px;border-radius:9px;transition:.15s}
+.nav-links button:hover{color:var(--ink);background:var(--sage-wash)}
+.nav-links button.active{color:var(--sage-deep);background:var(--sage-wash);font-weight:600}
+.nav-links button:focus-visible{outline:2.5px solid var(--sage);outline-offset:1px}
+@media(max-width:700px){.nav-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}.nav-links{gap:2px}}
+
+.hero{padding:72px 0 56px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
+@media(max-width:840px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.08em;color:var(--sage-deep);background:var(--sage-wash);border:1px solid #DDE3D6;padding:6px 14px;border-radius:999px;margin-bottom:20px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--sage-deep);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.12;letter-spacing:-.015em;margin-bottom:16px}
+h1 em{font-style:italic;color:var(--sage-deep)}
+.motto{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--clay);letter-spacing:.06em;margin-bottom:14px}
+.lede{font-size:1.05rem;color:var(--ink-soft);max-width:46ch;margin-bottom:28px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;border:none;text-decoration:none;font-weight:600;font-size:.9rem;padding:12px 24px;border-radius:12px;transition:transform .15s,box-shadow .15s}
+.btn:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,55,51,.18)}
+.btn-ghost{color:var(--ink);border:1.5px solid var(--line);background:var(--card)}
+.btn-ghost:hover{border-color:var(--sage)}
+
+.journal-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:0 14px 40px rgba(59,55,51,.07)}
+.jc-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.jc-head .label{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.jc-day{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:600}
+.jc-day small{font-size:1rem;color:var(--ink-soft);font-weight:400}
+.bar{height:8px;background:#EFEAE1;border-radius:99px;overflow:hidden;margin:6px 0 18px}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--sage-deep));border-radius:99px}
+.jc-rows{display:grid;gap:10px}
+.jc-row{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;padding:10px 14px;background:var(--paper);border-radius:10px}
+.jc-row .k{color:var(--ink-soft)}
+.jc-row .v{font-weight:600;text-align:right}
+.jc-row .v.soon{color:var(--clay)}
+
+section{padding:60px 0}
+.sec-head{margin-bottom:34px;max-width:60ch}
+.sec-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);margin-bottom:8px}
+h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.6rem,3.2vw,2.2rem);letter-spacing:-.01em;margin-bottom:8px}
+.sec-head p{color:var(--ink-soft)}
+h3.f{font-family:'Fraunces',serif;font-weight:600}
+
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.phase-card{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.phase-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(59,55,51,.09)}
+.phase-card:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.phase-card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.phase-card .num{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft)}
+.phase-card .icon{font-size:1.4rem}
+.phase-card h3{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;margin-bottom:2px}
+.phase-card .days{font-size:.8rem;color:var(--ink-soft);margin-bottom:10px}
+.phase-card .desc{font-size:.9rem;color:var(--ink-soft);margin-bottom:16px}
+.phase-card .foot{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;font-weight:600}
+.phase-card .go{transition:transform .18s}
+.phase-card:hover .go{transform:translateX(4px)}
+.tint-bar{position:absolute;top:0;left:0;right:0;height:5px}
+
+.crumb{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ink-soft);margin:26px 0 6px;flex-wrap:wrap}
+.crumb button{background:none;border:none;color:var(--sage-deep);font-size:.84rem;font-weight:500;padding:2px 4px;border-radius:6px}
+.crumb button:hover{background:var(--sage-wash)}
+.crumb .sep{color:var(--line)}
+
+.sprint-list{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.sprint-card{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .18s,box-shadow .18s}
+.sprint-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(59,55,51,.08)}
+.sprint-card:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.sprint-card .num{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft)}
+.sprint-card h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin:6px 0 2px}
+.sprint-card .days{font-size:.8rem;color:var(--ink-soft);margin-bottom:10px}
+.sprint-card .prob{font-size:.88rem;color:var(--ink-soft)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft)}
+
+.detail-hero{border-radius:var(--radius);padding:34px 30px;margin-bottom:28px;border:1px solid var(--line)}
+.detail-hero .days-pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;background:rgba(255,255,255,.7);padding:5px 12px;border-radius:99px;margin-bottom:12px}
+.detail-hero h2{margin-bottom:6px}
+.detail-hero p{color:var(--ink);opacity:.75;max-width:70ch}
+
+.block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-bottom:18px}
+.block h3{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.block h3 .bi{font-size:1.05rem}
+.block ul{list-style:none;display:grid;gap:9px}
+.block li{font-size:.92rem;padding-left:22px;position:relative;color:#514c46}
+.block li::before{content:"";position:absolute;left:4px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--sage)}
+.block.mist li::before{background:var(--clay)}
+.block p.body{font-size:.94rem;color:#514c46}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+.proj{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:16px 18px;margin-top:12px}
+.proj .tag{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lav-deep);display:block;margin-bottom:4px}
+.proj b{font-family:'Fraunces',serif;font-size:1rem}
+.proj p{font-size:.88rem;color:var(--ink-soft);margin-top:4px}
+
+.day-row{border-top:1px solid var(--line);padding:14px 4px;display:grid;grid-template-columns:110px 1fr;gap:14px;cursor:pointer}
+.day-row:hover{background:var(--paper)}
+.day-row .dnum{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--sage-deep);font-weight:600;padding-top:2px}
+.day-row .focus{font-size:.92rem;font-weight:600}
+.day-row .art{font-size:.8rem;color:var(--clay);margin-top:2px}
+.day-row .det{font-size:.86rem;color:var(--ink-soft);margin-top:8px}
+.day-row.is-done .focus{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--sage)}
+.day-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--sage);background:var(--card);color:#fff;font-size:.72rem;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle;transition:.15s;padding:0}
+.day-check:hover{border-color:var(--sage-deep)}
+.day-row.is-done .day-check{background:var(--sage-deep);border-color:var(--sage-deep)}
+.day-check:focus-visible{outline:2.5px solid var(--sage);outline-offset:1px}
+.dnum{display:flex;align-items:center;white-space:nowrap}
+.stepper{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.stepper button{width:30px;height:30px;border-radius:9px;border:1.5px solid var(--line);background:var(--paper);font-size:1rem;font-weight:600;color:var(--ink);transition:.15s}
+.stepper button:hover{border-color:var(--sage);background:var(--sage-wash)}
+.stepper button:focus-visible{outline:2.5px solid var(--sage);outline-offset:1px}
+.day-row .course-pill{display:inline-block;font-size:.7rem;font-weight:600;background:var(--lav-wash);color:var(--lav-deep);border-radius:99px;padding:3px 10px;margin-top:6px}
+.toggle-hint{font-size:.72rem;color:var(--ink-soft);font-weight:400}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 14px;text-align:center}
+.stat .ic{font-size:1.3rem;display:block;margin-bottom:6px}
+.stat .n{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;color:var(--sage-deep)}
+.stat .n small{font-size:.95rem;color:var(--ink-soft);font-weight:400}
+.stat .l{font-size:.76rem;color:var(--ink-soft)}
+
+.course-item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:start}
+@media(max-width:640px){.course-item{grid-template-columns:56px 1fr}}
+.course-item .cday{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--sage-deep);font-weight:600;padding-top:2px}
+.course-item b{font-size:.92rem}
+.course-item p{font-size:.84rem;color:var(--ink-soft);margin-top:2px}
+.course-item .dur{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);white-space:nowrap;padding-top:3px}
+.type-tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+.t-anthropic{background:var(--sage-wash);color:var(--sage-deep)}
+.t-tool{background:var(--lav-wash);color:var(--lav-deep)}
+.t-paid{background:var(--clay-wash);color:var(--clay)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filters button{border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:7px 15px;font-size:.8rem;font-weight:600;color:var(--ink-soft);transition:.15s}
+.filters button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filters button:focus-visible{outline:2.5px solid var(--sage);outline-offset:1px}
+
+.note-form{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:grid;gap:12px}
+.note-form textarea,.note-form input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.92rem;background:var(--paper);color:var(--ink);resize:vertical}
+.note-form textarea:focus,.note-form input:focus{outline:none;border-color:var(--sage)}
+.note-form-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.note-empty{background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);padding:36px;text-align:center;color:var(--ink-soft);font-size:.92rem}
+.note-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.note-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.note-cat{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:3px 10px}
+.nc-note{background:var(--sage-wash);color:var(--sage-deep)}
+.nc-link{background:var(--lav-wash);color:var(--lav-deep)}
+.nc-idea{background:var(--clay-wash);color:var(--clay)}
+.nc-resource{background:#EAF0F4;color:#5B7285}
+.note-date{font-size:.7rem;color:var(--ink-soft)}
+.note-del{margin-left:auto;background:none;border:none;color:var(--ink-soft);font-size:.8rem;padding:4px 8px;border-radius:8px}
+.note-del:hover{background:var(--clay-wash);color:var(--clay)}
+.note-del:focus-visible{outline:2.5px solid var(--sage);outline-offset:1px}
+.note-text{font-size:.92rem;color:#514c46;white-space:pre-wrap}
+.note-link{display:inline-block;font-size:.84rem;color:var(--sage-deep);font-weight:600;margin-top:6px;text-decoration:none;word-break:break-all}
+.note-link:hover{text-decoration:underline}
+.timeline{position:relative;padding-left:26px;max-width:660px}
+.timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding:0 0 26px 22px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-24px;top:5px;width:15px;height:15px;border-radius:50%;background:var(--paper);border:2.5px solid var(--sage-deep)}
+.tl-item.next::before{background:var(--sage-deep);box-shadow:0 0 0 5px #E4E9E0}
+.tl-item .when{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--clay);letter-spacing:.08em}
+.tl-item h4{font-family:'Fraunces',serif;font-size:1.08rem;font-weight:600;margin:3px 0 2px}
+.tl-item p{font-size:.9rem;color:var(--ink-soft)}
+.tl-item .jump{background:none;border:none;color:var(--sage-deep);font-size:.82rem;font-weight:600;padding:4px 0}
+.tl-item .jump:hover{text-decoration:underline}
+
+.now-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.now-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.now-card .icon{font-size:1.3rem;display:block;margin-bottom:8px}
+.now-card .k{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:3px}
+.now-card .v{font-weight:600;font-size:.94rem}
+
+.strip{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:40px 32px;text-align:center}
+.strip p{color:var(--ink-soft);max-width:50ch;margin:0 auto 22px}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--ink-soft);font-size:.84rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+footer button{background:none;border:none;color:var(--sage-deep);font-size:.84rem}
+footer button:hover{text-decoration:underline}
+.back-row{margin:22px 0 4px}
+.back-row button{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 16px;font-size:.84rem;font-weight:600;color:var(--ink)}
+.back-row button:hover{border-color:var(--sage)}
+.check-grid li::before{content:"✓";background:none;color:var(--sage-deep);font-weight:700;top:.1em;font-size:.9rem}
+`;
+
+/* ── helpers ── */
+const totalDays=180;
+function scrollTop(){window.scrollTo({top:0,behavior:"smooth"});}
+
+/* ── progress storage: window.storage → localStorage → memory ── */
+const MEM={};
+async function loadProgress(){
+  try{if(window.storage){const r=await window.storage.get("kate-progress");if(r&&r.value)return JSON.parse(r.value);}}catch(e){}
+  try{const d=localStorage.getItem("kate-progress");if(d)return JSON.parse(d);}catch(e){}
+  return MEM.p||{days:[],artifacts:{}};
+}
+async function saveProgress(p){
+  MEM.p=p;
+  try{if(window.storage){await window.storage.set("kate-progress",JSON.stringify(p));return;}}catch(e){}
+  try{localStorage.setItem("kate-progress",JSON.stringify(p));}catch(e){}
+}
+function deriveState(p){
+  const done=p.days||[];
+  const count=done.length;
+  const currentDay=count?Math.max(...done):0;
+  let curSprint=null,curPhase=null,nextDay=null;
+  outer:for(const ph of PHASES)for(const s of ph.sprints)for(const t of s.tasks){
+    if(!done.includes(t.day)){curSprint=s;curPhase=ph;nextDay=t;break outer;}
+  }
+  if(!curPhase){curPhase=PHASES[PHASES.length-1];curSprint=curPhase.sprints[curPhase.sprints.length-1];}
+  const artifacts={};ARTIFACT_CATS.forEach(c=>artifacts[c.key]=(p.artifacts&&p.artifacts[c.key])||0);
+  return{done,count,currentDay,curSprint,curPhase,nextDay,artifacts,pct:Math.round(count/totalDays*100)};
+}
+function phaseRange(ph){const m=ph.days.match(/(\d+)-(\d+)/);return[+m[1],+m[2]];}
+function phaseStatus(ph,st){
+  const[a,b]=phaseRange(ph);
+  const daysIn=st.done.filter(d=>d>=a&&d<=b).length;
+  const total=b-a+1;
+  if(daysIn>=total)return{label:"Completed",cls:"done",daysIn,total};
+  if(daysIn>0||st.curPhase.id===ph.id&&st.count>0)return{label:"In progress",cls:"cur",daysIn,total};
+  if(st.curPhase.id===ph.id)return{label:"Up next",cls:"cur",daysIn,total};
+  return{label:"Locked",cls:"",daysIn,total};
+}
+
+/* ── Nav ── */
+function Nav({view,go}){
+  const items=[["home","Home"],["roadmap","Roadmap"],["courses","Courses"],["artifacts","Artifacts"],["notebook","Notebook"],["now","Now"]];
+  return(
+  <nav>
+    <div className="wrap nav-inner">
+      <button className="logo" onClick={()=>go("home")}>Learning AI <span>with Kate</span></button>
+      <ul className="nav-links">
+        {items.map(([k,l])=>(
+          <li key={k}><button className={view===k?"active":""} onClick={()=>go(k)}>{l}</button></li>
+        ))}
+      </ul>
+    </div>
+  </nav>);
+}
+
+/* ── Home ── */
+function Home({go,openPhase,st}){
+  const started=st.count>0;
+  return(
+  <div className="fade">
+    <header className="hero">
+      <div className="wrap hero-grid">
+        <div>
+          <span className="eyebrow"><span className="dot"></span>{started?"IN PROGRESS":"STARTING SOON"} · DAY {st.currentDay} OF 180</span>
+          <p className="motto">Learn. Build. Automate. Share.</p>
+          <h1>180 days of learning AI, <em>one project at a time.</em></h1>
+          <p className="lede">A practical journey into AI &amp; automation through real projects. I'm documenting everything I learn, the prompts, the builds, the mistakes, so you can learn alongside me.</p>
+          <div className="cta-row">
+            <button className="btn btn-primary" onClick={()=>go("roadmap")}>Explore the roadmap</button>
+            <button className="btn btn-ghost" onClick={()=>go("courses")}>See the courses</button>
+          </div>
+        </div>
+        <aside className="journal-card" aria-label="Journey progress">
+          <div className="jc-head">
+            <span className="label">The Journal</span>
+            <span className="jc-day mono">{st.count}<small> / 180</small></span>
+          </div>
+          <div className="bar"><div className="bar-fill" style={{width:st.pct+"%"}}></div></div>
+          <div className="jc-rows">
+            <div className="jc-row"><span className="k">Current sprint</span><span className={st.count?"v":"v soon"}>{st.count?st.curSprint.title:"Kicking off soon"}</span></div>
+            <div className="jc-row"><span className="k">Current phase</span><span className="v">{st.curPhase.title}</span></div>
+            <div className="jc-row"><span className="k">Next up</span><span className="v">{st.nextDay?"Day "+st.nextDay.day+": "+st.nextDay.focus.split(".")[0]:"Journey complete!"}</span></div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section>
+      <div className="wrap">
+        <div className="sec-head">
+          <p className="sec-eyebrow">The Journey</p>
+          <h2>Why learn in public?</h2>
+          <p>Most AI courses hand you theory. This journal is different - every entry is tied to a real project I'm building as an executive assistant automating actual work. You'll see the process, not just the polished result: what worked, what broke, and the exact prompts and SOPs behind each build.</p>
+        </div>
+        <div className="timeline">
+          <div className="tl-item next">
+            <span className="when">{started?("DAY "+st.currentDay+" OF 180"):"DAY 1, COMING SOON"}</span>
+            <h4>{started?"The journey is underway":"The journey begins"}</h4>
+            <p>{started&&st.nextDay?("Next entry, Day "+st.nextDay.day+": "+st.nextDay.focus):"First entry: learning how Claude thinks and writing my first structured prompts."}</p>
+          </div>
+          {PHASES.map(ph=>{const ps=phaseStatus(ph,st);return(
+            <div className={"tl-item"+(st.curPhase.id===ph.id&&started?" next":"")} key={ph.id}>
+              <span className="when">{ph.days.toUpperCase()} · {ps.label.toUpperCase()}{ps.daysIn>0?(" · "+ps.daysIn+"/"+ps.total+" DAYS"):""}</span>
+              <h4>{PHASE_ICONS[ph.id]} {ph.title}</h4>
+              <p>{ph.description}</p>
+              <button className="jump" onClick={()=>openPhase(ph.id)}>View phase →</button>
+            </div>
+          );})}
+        </div>
+      </div>
+    </section>
+
+    <section style={{background:"#F4F0E8",borderTop:"1px solid var(--line)",borderBottom:"1px solid var(--line)"}}>
+      <div className="wrap">
+        <div className="sec-head">
+          <p className="sec-eyebrow">The Dashboard</p>
+          <h2>{st.count?"Progress so far":"Everything starts at zero"}</h2>
+          <p>Targets for the 180 days. These counters grow with every entry - that's the point.</p>
+        </div>
+        <div className="stats">
+          <div className="stat"><span className="ic">📅</span><div className="n mono">{st.count}<small> / 180</small></div><div className="l">Days completed</div></div>
+          {ARTIFACT_CATS.map(c=>(
+            <div className="stat" key={c.key}>
+              <span className="ic">{c.icon}</span>
+              <div className="n mono">{st.artifacts[c.key]}<small> / {c.target}</small></div>
+              <div className="l">{c.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="follow">
+      <div className="wrap">
+        <div className="strip">
+          <h2>Follow the journey from day one</h2>
+          <p>New entries as they happen: projects, prompts, and honest reflections. No spam, just the journal.</p>
+          <a className="btn btn-primary" href="#" onClick={e=>e.preventDefault()}>Get updates</a>
+        </div>
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── Roadmap (phases) ── */
+function Roadmap({openPhase,st}){
+  return(
+  <div className="wrap fade">
+    <section>
+      <div className="sec-head">
+        <p className="sec-eyebrow">The Roadmap</p>
+        <h2>Six phases, twelve sprints, 180 days</h2>
+        <p>Each phase is 30 days split into two sprints, each ending with real projects. Click any phase to see its sprints, skills, day-by-day plan, and checklists.</p>
+      </div>
+      <div className="phases">
+        {PHASES.map(ph=>(
+          <button className="phase-card" key={ph.id} onClick={()=>openPhase(ph.id)}>
+            <div className="tint-bar" style={{background:PHASE_COLORS[ph.id]}}></div>
+            <div className="top">
+              <span className="num">PHASE {String(ph.id).padStart(2,"0")}</span>
+              <span className="icon">{PHASE_ICONS[ph.id]}</span>
+            </div>
+            <h3>{ph.title}</h3>
+            <p className="days mono">{ph.days}</p>
+            <p className="desc">{ph.description}</p>
+            <div className="foot">
+              <span style={{color:PHASE_COLORS[ph.id]}}>{(()=>{const ps=phaseStatus(ph,st);return ps.daysIn>0?ps.daysIn+"/"+ps.total+" days · "+ps.label:ps.label;})()}</span>
+              <span className="go">→</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── Phase detail ── */
+function PhaseView({phase,go,openSprint,st}){
+  return(
+  <div className="wrap fade">
+    <div className="crumb">
+      <button onClick={()=>go("roadmap")}>Roadmap</button>
+      <span className="sep">/</span><span>Phase {phase.id}</span>
+    </div>
+    <div className="detail-hero" style={{background:PHASE_WASH[phase.id]}}>
+      <span className="days-pill">{phase.days.toUpperCase()}</span>
+      <h2>{PHASE_ICONS[phase.id]} {phase.title}</h2>
+      <p>{phase.description}</p>
+    </div>
+    <div className="sprint-list" style={{marginBottom:"48px"}}>
+      {phase.sprints.map(s=>(
+        <button className="sprint-card" key={s.id} onClick={()=>openSprint(phase.id,s.id)}>
+          <span className="num">SPRINT {String(s.id).padStart(2,"0")} · {s.days.toUpperCase()}</span>
+          <h3>{s.title}</h3>
+          <p className="prob">{s.objective}</p>
+          <div className="tools">{s.tools.map(t=><span className="chip" key={t}>{t}</span>)}</div>
+        </button>
+      ))}
+    </div>
+  </div>);
+}
+
+/* ── Sprint detail ── */
+function SprintView({phase,sprint,go,openPhase,st,toggleDay}){
+  const [openDay,setOpenDay]=useState(null);
+  return(
+  <div className="wrap fade">
+    <div className="crumb">
+      <button onClick={()=>go("roadmap")}>Roadmap</button><span className="sep">/</span>
+      <button onClick={()=>openPhase(phase.id)}>{phase.title}</button><span className="sep">/</span>
+      <span>Sprint {sprint.id}</span>
+    </div>
+    <div className="detail-hero" style={{background:PHASE_WASH[phase.id]}}>
+      <span className="days-pill">{sprint.days.toUpperCase()}</span>
+      <h2>{sprint.title}</h2>
+      <p>{sprint.objective}</p>
+      <div className="tools" style={{marginTop:"14px"}}>{sprint.tools.map(t=><span className="chip" key={t} style={{background:"rgba(255,255,255,.7)"}}>{t}</span>)}</div>
+    </div>
+
+    <div className="block">
+      <h3><span className="bi">🎯</span>The problem this sprint solves</h3>
+      <p className="body">{sprint.problem}</p>
+    </div>
+
+    <div className="two-col">
+      <div className="block">
+        <h3><span className="bi">🧠</span>Skills you'll build</h3>
+        <ul>{sprint.skills.map((s,i)=><li key={i}>{s}</li>)}</ul>
+      </div>
+      <div className="block">
+        <h3><span className="bi">💼</span>Real-world use cases</h3>
+        <ul>{sprint.useCases.map((s,i)=><li key={i}>{s}</li>)}</ul>
+      </div>
+    </div>
+
+    <div className="block">
+      <h3><span className="bi">📚</span>Resources</h3>
+      <ul>{sprint.resources.map((s,i)=><li key={i}>{s}</li>)}</ul>
+      {sprint.toolCourses&&<ul style={{marginTop:"9px"}}>{sprint.toolCourses.map((s,i)=><li key={"t"+i}>{typeof s==="string"?s:s.name+" - "+s.desc}</li>)}</ul>}
+    </div>
+
+    <div className="block">
+      <h3><span className="bi">✍️</span>Practice exercises</h3>
+      <ul>{sprint.exercises.map((s,i)=><li key={i}>{s}</li>)}</ul>
+    </div>
+
+    {(sprint.miniProject||sprint.portfolioProject)&&(
+      <div className="block">
+        <h3><span className="bi">🚀</span>Projects</h3>
+        {sprint.miniProject&&(
+          <div className="proj"><span className="tag">Mini project</span><b>{sprint.miniProject.title}</b><p>{sprint.miniProject.desc}</p></div>
+        )}
+        {sprint.portfolioProject&&(
+          <div className="proj"><span className="tag">Portfolio project</span><b>{sprint.portfolioProject.title}</b><p>{sprint.portfolioProject.desc}</p></div>
+        )}
+      </div>
+    )}
+
+    <div className="block">
+      <h3><span className="bi">📅</span>Day-by-day plan <span className="toggle-hint">- click a day for details, tap the circle to mark it done</span></h3>
+      <div>
+        {sprint.tasks.map(t=>(
+          <div className={"day-row"+(st.done.includes(t.day)?" is-done":"")} key={t.day} onClick={()=>setOpenDay(openDay===t.day?null:t.day)}>
+            <span className="dnum">
+              <button className="day-check" aria-label={"Mark day "+t.day+(st.done.includes(t.day)?" incomplete":" complete")} onClick={e=>{e.stopPropagation();toggleDay(t.day);}}>{st.done.includes(t.day)?"✓":""}</button>
+              DAY {t.day}
+            </span>
+            <div>
+              <div className="focus">{t.focus}</div>
+              {t.artifact&&<div className="art">↳ Build: {t.artifact}</div>}
+              {t.course&&<span className="course-pill">🎓 {t.course.name} · {t.course.duration}</span>}
+              {openDay===t.day&&t.detail&&<div className="det fade">{t.detail}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {sprint.mistakes&&(
+      <div className="block mist">
+        <h3><span className="bi">⚠️</span>Common mistakes to avoid</h3>
+        <ul>{sprint.mistakes.map((s,i)=><li key={i}>{s}</li>)}</ul>
+      </div>
+    )}
+
+    {sprint.checklist&&(
+      <div className="block">
+        <h3><span className="bi">✅</span>Sprint completion checklist</h3>
+        <ul className="check-grid">{sprint.checklist.map((s,i)=><li key={i}>{s}</li>)}</ul>
+      </div>
+    )}
+    <div className="back-row" style={{paddingBottom:"48px"}}>
+      <button onClick={()=>openPhase(phase.id)}>← Back to {phase.title}</button>
+    </div>
+  </div>);
+}
+
+/* ── Courses ── */
+function Courses(){
+  const [filter,setFilter]=useState("all");
+  const types={all:"All",anthropic:"Anthropic",tool:"Tool courses",paid:"Paid"};
+  const list=ALL_COURSES.filter(c=>filter==="all"||c.type===filter).sort((a,b)=>a.day-b.day);
+  return(
+  <div className="wrap fade">
+    <section>
+      <div className="sec-head">
+        <p className="sec-eyebrow">The Curriculum</p>
+        <h2>Every course on the journey</h2>
+        <p>{ALL_COURSES.length} courses scheduled across 180 days, most of them free. "Day 0" courses can be taken anytime.</p>
+      </div>
+      <div className="filters">
+        {Object.entries(types).map(([k,l])=>(
+          <button key={k} className={filter===k?"on":""} onClick={()=>setFilter(k)}>{l}</button>
+        ))}
+      </div>
+      <div style={{display:"grid",gap:"12px",paddingBottom:"40px"}}>
+        {list.map(c=>(
+          <div className="course-item" key={c.id}>
+            <span className="cday">{c.day===0?"ANYTIME":"DAY "+c.day}</span>
+            <div>
+              <b>{c.name}</b>
+              <span className={"type-tag t-"+c.type}>{c.type==="anthropic"?"Anthropic":c.type==="tool"?"Tool":"Paid"}</span>
+              <p>{c.desc}</p>
+            </div>
+            <span className="dur">{c.duration}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── Artifacts ── */
+function Artifacts({st,bump}){
+  return(
+  <div className="wrap fade">
+    <section>
+      <div className="sec-head">
+        <p className="sec-eyebrow">The Output</p>
+        <h2>What 180 days will produce</h2>
+        <p>Learning here means building. These are the artifact targets for the full journey, and every one becomes part of a public portfolio. Use + and − to log what you've built.</p>
+      </div>
+      <div className="stats" style={{paddingBottom:"40px"}}>
+        {ARTIFACT_CATS.map(c=>(
+          <div className="stat" key={c.key}>
+            <span className="ic">{c.icon}</span>
+            <div className="n mono">{st.artifacts[c.key]}<small> / {c.target}</small></div>
+            <div className="l">{c.label}</div>
+            <div className="stepper">
+              <button aria-label={"Remove one from "+c.label} onClick={()=>bump(c.key,-1)}>−</button>
+              <button aria-label={"Add one to "+c.label} onClick={()=>bump(c.key,1)}>+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── Notebook ── */
+const NOTE_CATS=["Note","Link","Idea","Resource"];
+function Notebook({notes,addNote,deleteNote}){
+  const [text,setText]=useState("");
+  const [link,setLink]=useState("");
+  const [cat,setCat]=useState("Note");
+  const [filter,setFilter]=useState("All");
+  const submit=()=>{
+    if(!text.trim()&&!link.trim())return;
+    addNote({id:Date.now(),text:text.trim(),link:link.trim(),cat,date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})});
+    setText("");setLink("");
+  };
+  const shown=notes.filter(n=>filter==="All"||n.cat===filter);
+  return(
+  <div className="wrap fade">
+    <section>
+      <div className="sec-head">
+        <p className="sec-eyebrow">The Notebook</p>
+        <h2>Notes, links, and ideas</h2>
+        <p>A scratchpad for the journey: save useful links, quick thoughts, and resources to come back to. Everything is stored with your progress.</p>
+      </div>
+
+      <div className="note-form">
+        <textarea placeholder="Write a note, an idea, or a description for a link..." value={text} onChange={e=>setText(e.target.value)} rows="3"></textarea>
+        <input type="url" placeholder="Optional link (https://...)" value={link} onChange={e=>setLink(e.target.value)}/>
+        <div className="note-form-row">
+          <div className="filters" style={{margin:0}}>
+            {NOTE_CATS.map(c=>(
+              <button key={c} className={cat===c?"on":""} onClick={()=>setCat(c)}>{c}</button>
+            ))}
+          </div>
+          <button className="btn btn-primary" onClick={submit}>Save entry</button>
+        </div>
+      </div>
+
+      {notes.length>0&&(
+        <div className="filters" style={{marginTop:"26px"}}>
+          {["All",...NOTE_CATS].map(c=>(
+            <button key={c} className={filter===c?"on":""} onClick={()=>setFilter(c)}>{c}{c!=="All"?" ("+notes.filter(n=>n.cat===c).length+")":""}</button>
+          ))}
+        </div>
+      )}
+
+      <div style={{display:"grid",gap:"12px",paddingBottom:"40px",marginTop:notes.length?"6px":"0"}}>
+        {shown.length===0&&(
+          <div className="note-empty">
+            <span style={{fontSize:"1.6rem",display:"block",marginBottom:"8px"}}>📓</span>
+            {notes.length===0?"Your notebook is empty. Save your first note or link above.":"No entries in this category yet."}
+          </div>
+        )}
+        {shown.map(n=>(
+          <div className="note-card" key={n.id}>
+            <div className="note-top">
+              <span className={"note-cat nc-"+n.cat.toLowerCase()}>{n.cat}</span>
+              <span className="note-date mono">{n.date}</span>
+              <button className="note-del" aria-label="Delete entry" onClick={()=>deleteNote(n.id)}>✕</button>
+            </div>
+            {n.text&&<p className="note-text">{n.text}</p>}
+            {n.link&&<a className="note-link" href={n.link} target="_blank" rel="noopener noreferrer">🔗 {n.link.replace(/^https?:\/\//,"").slice(0,60)}</a>}
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── Now ── */
+function Now({st}){
+  const started=st.count>0;
+  const nextCourse=ALL_COURSES.filter(c=>c.day>st.currentDay).sort((a,b)=>a.day-b.day)[0];
+  return(
+  <div className="wrap fade">
+    <section>
+      <div className="sec-head">
+        <p className="sec-eyebrow">Now</p>
+        <h2>What I'm doing right now</h2>
+        <p>This page updates as the journey moves, so check back to see what's current.</p>
+      </div>
+      <div className="now-grid" style={{paddingBottom:"40px"}}>
+        <div className="now-card"><span className="icon">📚</span><p className="k">Current sprint</p><p className="v">{started?st.curSprint.title:"Preparing the 180-day plan"}</p></div>
+        <div className="now-card"><span className="icon">🧭</span><p className="k">Current phase</p><p className="v">{started?st.curPhase.title:"AI Foundations, up first"}</p></div>
+        <div className="now-card"><span className="icon">🛠️</span><p className="k">{started?"Next task":"Setting up"}</p><p className="v">{started&&st.nextDay?"Day "+st.nextDay.day+": "+st.nextDay.focus:"This learning journal"}</p></div>
+        <div className="now-card"><span className="icon">🎓</span><p className="k">Next course</p><p className="v">{nextCourse?nextCourse.name+" (Day "+nextCourse.day+")":"All courses done!"}</p></div>
+      </div>
+    </section>
+  </div>);
+}
+
+/* ── App ── */
+function App(){
+  const [route,setRoute]=useState({view:"home"});
+  const [prog,setProg]=useState({days:[],artifacts:{}});
+  useEffect(()=>{loadProgress().then(setProg);},[]);
+  const st=deriveState(prog);
+  const toggleDay=day=>{
+    const days=prog.days.includes(day)?prog.days.filter(d=>d!==day):[...prog.days,day];
+    const p={...prog,days};setProg(p);saveProgress(p);
+  };
+  const bumpArtifact=(key,delta)=>{
+    const a={...(prog.artifacts||{})};a[key]=Math.max(0,(a[key]||0)+delta);
+    const p={...prog,artifacts:a};setProg(p);saveProgress(p);
+  };
+  const notes=prog.notes||[];
+  const addNote=n=>{const p={...prog,notes:[n,...notes]};setProg(p);saveProgress(p);};
+  const deleteNote=id=>{const p={...prog,notes:notes.filter(n=>n.id!==id)};setProg(p);saveProgress(p);};
+  const go=v=>{setRoute({view:v});scrollTop();};
+  const openPhase=id=>{setRoute({view:"phase",phaseId:id});scrollTop();};
+  const openSprint=(pid,sid)=>{setRoute({view:"sprint",phaseId:pid,sprintId:sid});scrollTop();};
+
+  const phase=PHASES.find(p=>p.id===route.phaseId);
+  const sprint=phase&&route.sprintId?phase.sprints.find(s=>s.id===route.sprintId):null;
+
+  return(
+  <React.Fragment>
+    <style>{css}</style>
+    <Nav view={["phase","sprint"].includes(route.view)?"roadmap":route.view} go={go}/>
+    {route.view==="home"&&<Home go={go} openPhase={openPhase} st={st}/>}
+    {route.view==="roadmap"&&<Roadmap openPhase={openPhase} st={st}/>}
+    {route.view==="phase"&&phase&&<PhaseView phase={phase} go={go} openSprint={openSprint} st={st}/>}
+    {route.view==="sprint"&&phase&&sprint&&<SprintView phase={phase} sprint={sprint} go={go} openPhase={openPhase} st={st} toggleDay={toggleDay}/>}
+    {route.view==="courses"&&<Courses/>}
+    {route.view==="artifacts"&&<Artifacts st={st} bump={bumpArtifact}/>}
+    {route.view==="notebook"&&<Notebook notes={notes} addNote={addNote} deleteNote={deleteNote}/>}
+    {route.view==="now"&&<Now st={st}/>}
+    <footer>
+      <div className="wrap">
+        <span>© 2026 Learning AI with Kate</span>
+        <span className="mono" style={{fontSize:".78rem"}}>Learn. Build. Automate. Share. · <button onClick={()=>go("home")}>Back home</button></span>
+      </div>
+    </footer>
+  </React.Fragment>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
